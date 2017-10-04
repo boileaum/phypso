@@ -1,0 +1,17 @@
+continuous Galerkin
+Compilation:
+gcc fe_implicit.c lobatto.c skyline.c -lm -O
+
+Gnuplot drawing command
+plot 'fe.dat'  using 1:6 w l, 'fe.dat' using 1:7 w l
+
+
+-----------------------------------------------
+
+discontinuous Galerkin:
+
+gcc dg_implicit.c lobatto.c skyline.c -lm -O
+
+Gnuplot drawing command
+plot 'fe.dat'  using 1:6 w l, 'fe.dat' using 1:7 w l
+
