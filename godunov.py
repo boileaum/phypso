@@ -73,6 +73,6 @@ def timeloop(tmax, xm, wn, wnp1):
             wnp1[i] = wnp1[i] + 0.5*dt/dx*w**2
         wn[:] = wnp1[:]  # Update
         t += dt
-        print("t =", t)
+        #print("t =", t)
 
     return xm, wn
