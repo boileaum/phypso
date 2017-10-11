@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#pythran export timeloop(int)
-#pythran export sol_exact(int)
+#pythran export sol_exact(float, float[])
+#pythran export riemann(float, float, float)
+#pythran export timeloop(float, float[], float[], float[])
+#pythran export A1, A2
 """
 Created on Wed Oct  4 17:10:53 2017
 
@@ -10,14 +12,8 @@ Created on Wed Oct  4 17:10:53 2017
 
 import numpy as np
 
-NMAX = 100
 A1 = -1.
 A2 = 2.
-xm = np.zeros(NMAX+2)
-wex = np.zeros(NMAX+2)
-wn = np.zeros(NMAX+2)
-wnp1 = np.zeros(NMAX+2)
-
 
 def sol_exact_x(x, t):
 
@@ -28,12 +24,13 @@ def sol_exact_x(x, t):
             w = (1. - x)/(1. - t)
     else:
         w = 1. if (x - 1.) <= 0.5*(t - 1.) else 0.
-
     return w
 
 
-def sol_exact(tmax):
-    for i in range(1, NMAX+1):
+def sol_exact(tmax, xm):
+
+    wex = np.zeros_like(xm)
+    for i in range(1, len(wex)-1):
         wex[i] = sol_exact_x(xm[i], tmax)
     return wex
 
@@ -51,13 +48,14 @@ def riemann(wl, wr, xi):
     return w
 
 
-def timeloop(tmax):
+def timeloop(tmax, xm, wn, wnp1):
 
-    dx = (A2 - A1)/NMAX
+    nmax = len(xm) - 2
+    dx = float(A2 - A1)/nmax
     cfl = 0.8
 
     # Initialization
-    for i in range(NMAX+1):
+    for i in range(nmax+1):
         xm[i] = A1 + (i + 0.5)*dx
         wn[i] = sol_exact_x(xm[i], 0.)
         wnp1[i] = wn[i]
@@ -66,7 +64,7 @@ def timeloop(tmax):
     while t < tmax:
         vmax = max(abs(wn))
         dt = cfl*dx/(vmax + 1e-16)
-        for i in range(1, NMAX+1):
+        for i in range(1, nmax+1):
             # Right flux
             w = riemann(wn[i], wn[i+1], 0.)
             wnp1[i] = wnp1[i] - 0.5*dt/dx*w**2
