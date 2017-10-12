@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#pythran export sol_exact_x(float, float)
 #pythran export sol_exact(float, float[])
 #pythran export riemann(float, float, float)
 #pythran export timeloop(float, float[], float[], float[])
-#pythran export A1, A2
+#pythran export xmin, xmax
 """
-Created on Wed Oct  4 17:10:53 2017
-
-@author: boileau
+Godunov solver for the Burgers equation
 """
 
 import numpy as np
 
-A1 = -1.
-A2 = 2.
+xmin = -1.
+xmax = 2.
+
 
 def sol_exact_x(x, t):
-
+    """return exact solution for at (x, t)"""
     if t <= 1.:
         if x <= t: w = 1.
         elif x >= 1.: w = 0.
@@ -28,7 +28,7 @@ def sol_exact_x(x, t):
 
 
 def sol_exact(tmax, xm):
-
+    """loop on each cell to return the exact solution"""
     wex = np.zeros_like(xm)
     for i in range(1, len(wex)-1):
         wex[i] = sol_exact_x(xm[i], tmax)
@@ -36,7 +36,7 @@ def sol_exact(tmax, xm):
 
 
 def riemann(wl, wr, xi):
-
+    """Return the solution of the Riemann problem at xi"""
     if wl > wr:
         sigma = 0.5*(wl + wr)
         if xi < sigma: w = wl
@@ -49,14 +49,14 @@ def riemann(wl, wr, xi):
 
 
 def timeloop(tmax, xm, wn, wnp1):
-
+    """Iterate overt time to return the solution at t = tmax"""
     nmax = len(xm) - 2
-    dx = float(A2 - A1)/nmax
+    dx = float(xmax - xmin)/nmax
     cfl = 0.8
 
     # Initialization
     for i in range(nmax+1):
-        xm[i] = A1 + (i + 0.5)*dx
+        xm[i] = xmin + (i + 0.5)*dx
         wn[i] = sol_exact_x(xm[i], 0.)
         wnp1[i] = wn[i]
 

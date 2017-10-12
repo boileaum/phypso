@@ -1,7 +1,7 @@
-### Installation
+### Installation on Mac
 
 ```
-brew reinstall boost-python --with-python3 --c++11
+pip install pythran
 ```
 
 ### Use pythran to accelerate Python
