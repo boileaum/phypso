@@ -10,7 +10,7 @@ F2PYFLAGS=-DF2PY_REPORT_ON_ARRAY_COPY=1 --quiet --f90exec=$(FC) --opt=$(OPTFLAG)
 all: godunov
 
 godunov:
-	$(F2PY) $(F2PYFLAGS) -m libgodunov -c godunov.f90
+	$(F2PY) $(F2PYFLAGS) -m godunov_fortran -c godunov.f90
 
 clean:
 	rm -rf *.o *.out *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM

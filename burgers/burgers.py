@@ -10,24 +10,20 @@ import numpy as np
 import timeit
 
 
-def compute_sol_python(tmax, nmax):
-    """Allocate arrays and solve Godunov problem using Python (or C++ through
-    Pythran)"""
-    xm = np.zeros(nmax+2)
-    wn = np.zeros(nmax+2)
-    wnp1 = np.zeros(nmax+2)
-    xm, wn = godunov.timeloop(tmax, xm, wn, wnp1)
-    return xm, wn
-
-
-def compute_sol_fortran(tmax, nmax):
-    """Allocate Fortran-ordered arrays and solve Godunov problem using
-    Fortran"""
-    import libgodunov
-    xm = np.zeros(nmax+2, order='F')
-    wn = np.zeros(nmax+2, order='F')
-    libgodunov.timeloop(tmax, xm, wn)
-    return xm, wn
+def compute_sol(tmax, nmax, kernel='python'):
+    """Solve Godunov problem using the selected kernel"""
+    if kernel == "python":  # Use native python or C++ with pythran
+        return godunov.timeloop(tmax, nmax)
+    elif kernel == "numpy":
+        import godunov_numpy
+        return godunov_numpy.timeloop(tmax, nmax)
+    elif kernel == "fortran":
+        import godunov_fortran
+        # Allocate Fortran-ordered numpy arrays
+        xm = np.zeros(nmax+2, order='F')
+        wn = np.zeros(nmax+2, order='F')
+        godunov_fortran.timeloop(tmax, xm, wn)
+        return xm, wn
 
 
 def L2_err(sol, ref, norm=1.0):
@@ -36,22 +32,22 @@ def L2_err(sol, ref, norm=1.0):
     return np.linalg.norm(sol - ref, ord=2)/np.sqrt(N)/norm
 
 
-def main(tmax, nmax, profile=False, plot=False, fortran=False):
+def main(tmax, nmax, profile=False, plot=False, kernel='python'):
 
     print("tmax =", tmax)
     print("nmax =", nmax)
-    global compute_sol
-    compute_sol = compute_sol_fortran if fortran else compute_sol_python
-    xm, wn = compute_sol(tmax, nmax)  # Always compute once
+    print("kernel:", kernel)
+
+    xm, wn = compute_sol(tmax, nmax, kernel)  # Always compute once
     if profile:
-        s = "xm, wn = compute_sol({}, {})".format(tmax, nmax)
+        s = "xm, wn = compute_sol({}, {}, kernel='{}')".format(tmax, nmax,
+                                                               kernel)
         ntime = 10
-        total_time = timeit.timeit(s, setup="import godunov", number=ntime,
-                                   globals=globals())
+        total_time = timeit.timeit(s, number=ntime, globals=globals())
         print("Mean time [s] over {} executions = {}".format(ntime,
               total_time/ntime))
 
-    wex = godunov.sol_exact(tmax, xm)
+    wex = np.vectorize(godunov.sol_exact)(xm, tmax)
 
     print("L2 error = {}".format(L2_err(wn, wex)))
 
@@ -68,13 +64,13 @@ if __name__ == '__main__':
     parser.add_argument('--tmax', type=float, metavar="final_time", default=1.,
                         help="simulation final time")
     parser.add_argument('--nmax', type=int, metavar="number_of_pts",
-                        default=100, help="number of points")
+                        default=100, help="number of grid points")
     parser.add_argument('--profile', action='store_true',
                         help="activate profiling")
     parser.add_argument('--plot', action='store_true',
                         help="activate plotting")
-    parser.add_argument('--fortran', action='store_true',
-                        help="use fortran binding")
+    parser.add_argument('--kernel', choices=['python', 'numpy', 'fortran'],
+                        default='python', help="select kernel type")
     args = parser.parse_args()
 
-    main(args.tmax, args.nmax, args.profile, args.plot, args.fortran)
+    main(args.tmax, args.nmax, args.profile, args.plot, args.kernel)
