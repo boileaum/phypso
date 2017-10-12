@@ -5,5 +5,5 @@ exact
 exact.dat
 godu
 godu.dat
-pip
-godunov.so
+*.so
+*.so.dSYM
