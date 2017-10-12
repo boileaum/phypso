@@ -18,14 +18,14 @@ subroutine timeloop(nmax, tmax, xm, wn)
     cfl = 0.8d0
 
     do i = 0, nmax+1
-        xm(i) = xmin + (i + 0.5d0)*dx
+        xm(i) = xmin + (i - 0.5d0)*dx
         call sol_exact(xm(i), 0.d0, w)
         wn(i) = w
         wnp1(i) = wn(i)
     enddo
     t = 0.d0
     do while(t < tmax)
-        vmax = maxval(wn)
+        vmax = maxval(abs(wn))
         dt = cfl*dx/vmax
         do i = 1, nmax
             call riemann(wn(i), wn(i+1), 0.d0, w)  ! Right flux
