@@ -1,0 +1,20 @@
+FROM boileaum/phypso-deps:latest
+MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
+ENV REFRESHED_AT 2017-10-13
+
+# Set up user so that we do not run as root
+RUN useradd -m -s /bin/bash -G sudo euler && \
+    echo "euler ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+ENV HOME /home/euler
+
+COPY . $HOME/phypso
+RUN chown -R euler:euler $HOME
+USER euler
+
+WORKDIR $HOME/phypso/burgers
+RUN make
+RUN pythran godunov.py
+
+CMD /bin/bash
+

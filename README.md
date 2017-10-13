@@ -1,6 +1,10 @@
 # Burgers' equation solver
 
-Everything in `./burgers/` subdirectory.
+Everything in `./burgers/` subdirectory. To get an environment ready for running, [docker](https://www.docker.com/) is a solution:
+
+```
+docker run -ti boileaum/phypso
+```
 
 ## Basic usage
 
@@ -110,4 +114,14 @@ tmax = 1.0
 nmax = 1000
 Mean time [s] over 10 executions = 0.007240815297700464
 L2 error = 0.036801482187378914
+```
+
+# Developers' corner
+
+
+### Build the docker images
+
+```
+cd docker
+docker-compose build
 ```

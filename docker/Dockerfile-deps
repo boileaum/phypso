@@ -1,0 +1,23 @@
+FROM ubuntu:latest
+
+MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
+
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+
+RUN apt-get update --fix-missing && \
+    apt-get install -y \ 
+    git \
+    gfortran \
+    python3-pip
+
+RUN pip3 install --upgrade pip && \
+    pip3 install numpy && \
+    pip3 install colorlog && \
+    pip3 install scipy
+
+RUN cd /tmp && \
+    git clone https://github.com/serge-sans-paille/pythran.git && \
+    cd pythran && \
+    pip3 install . --upgrade
+    
+CMD /bin/bash

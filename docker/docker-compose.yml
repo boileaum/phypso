@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+  deps:
+    build:
+      context: .
+      dockerfile: Dockerfile-deps
+    image: boileaum/phypso-deps:latest
+
+  user:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile-user
+    image: boileaum/phypso:latest
+    depends_on:
+      - deps
+
