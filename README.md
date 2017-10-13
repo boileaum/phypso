@@ -1,9 +1,15 @@
 # Burgers' equation solver
 
+## Installation 
+
 Everything in `./burgers/` subdirectory. To get an environment ready for running, [docker](https://www.docker.com/) is a solution:
 
 ```
-docker run -ti boileaum/phypso
+[host] git clone https://git.unistra.fr/m.boileau/phypso.git
+[host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso-env
+[container] cd phypso/burgers
+[container] make
+[containers] pythran godunov.py
 ```
 
 ## Basic usage
