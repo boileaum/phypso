@@ -1,16 +1,9 @@
-FROM boileaum/phypso-deps:latest
+FROM boileaum/phypso-env:latest
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
 ENV REFRESHED_AT 2017-10-13
 
-# Set up user so that we do not run as root
-RUN useradd -m -s /bin/bash -G sudo euler && \
-    echo "euler ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
-ENV HOME /home/euler
-
 COPY . $HOME/phypso
-RUN chown -R euler:euler $HOME
-USER euler
+RUN sudo chown -R euler:euler $HOME
 
 WORKDIR $HOME/phypso/burgers
 RUN make

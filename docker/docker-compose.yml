@@ -7,11 +7,19 @@ services:
       dockerfile: Dockerfile-deps
     image: boileaum/phypso-deps:latest
 
+  env:
+    build:
+      context: .
+      dockerfile: Dockerfile-env
+    image: boileaum/phypso-env:latest
+    depends_on:
+      - deps
+
   user:
     build:
       context: ../
       dockerfile: docker/Dockerfile-user
     image: boileaum/phypso:latest
     depends_on:
-      - deps
+      - env
 
