@@ -42,8 +42,13 @@ def main(tmax, nmax, profile=False, plot=False, kernel='python'):
     if profile:
         s = "xm, wn = compute_sol({}, {}, kernel='{}')".format(tmax, nmax,
                                                                kernel)
+        if kernel == 'python':
+            setup = "import godunov"
+        else:
+            setup = "import godunov_{}".format(kernel)
         ntime = 10
-        total_time = timeit.timeit(s, number=ntime, globals=globals())
+        total_time = timeit.timeit(s, number=ntime, setup=setup,
+                                   globals=globals())
         print("Mean time [s] over {} executions = {}".format(ntime,
               total_time/ntime))
 
