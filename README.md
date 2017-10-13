@@ -2,14 +2,14 @@
 
 ## Installation 
 
-Everything in `./burgers/` subdirectory. To get an environment ready for running, [docker](https://www.docker.com/) is a solution:
+To get an environment ready for running, [docker](https://www.docker.com/) is a solution:
 
 ```
 [host] git clone https://git.unistra.fr/m.boileau/phypso.git
 [host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso-env
 [container] cd phypso/burgers
 [container] make
-[containers] pythran godunov.py
+[container] pythran godunov.py
 ```
 
 ## Basic usage
