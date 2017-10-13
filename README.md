@@ -8,8 +8,8 @@ To get an environment ready for running, [docker](https://www.docker.com/) is a 
 [host] git clone https://git.unistra.fr/m.boileau/phypso.git
 [host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso-env
 [container] cd phypso/burgers
-[container] make  # Build kernel from fortran sources
-[container] pythran godunov.py  # Build C++ kernel from python sources
+[container] make                    # Build kernel from fortran sources
+[container] pythran godunov.py      # Build C++ kernel from python sources
 ```
 
 ## Basic usage
