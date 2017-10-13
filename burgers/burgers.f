@@ -1,4 +1,5 @@
 c234567
+c Taken from P. Helluy course: http://www-irma.u-strasbg.fr/~helluy/PHYP/hyper.html
       program burgers
 
 c ce programme calcule la solution de l'équation de burgers
