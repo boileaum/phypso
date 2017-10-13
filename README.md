@@ -12,7 +12,7 @@ To get an environment ready for running, [docker](https://www.docker.com/) is a 
 [container] pythran godunov.py      # Build C++ kernel from python sources
 ```
 
-The `docker/Dockerfile-deps` provides a description of the required dependencies.
+The `docker/Dockerfile-deps` file provides a description of the required dependencies.
 
 ## Basic usage
 
