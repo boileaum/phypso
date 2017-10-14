@@ -2,14 +2,23 @@
 
 ## Installation 
 
-Everything in `./burgers/` subdirectory. To get an environment ready for running, [docker](https://www.docker.com/) is a solution:
+To get an environment ready for running, [docker](https://www.docker.com/) is a solution.
+
+From the host:
 
 ```
 [host] git clone https://git.unistra.fr/m.boileau/phypso.git
 [host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso-env
+```
+
+Now from the container:
+
+```
 [container] cd phypso/burgers
 [container] make
 ```
+
+The `docker/Dockerfile-deps` file provides a full description of the required dependencies.
 
 ## Basic usage
 
