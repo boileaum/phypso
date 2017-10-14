@@ -5,19 +5,22 @@ Solve Burgers' equation using the 1rst-order Godunov method
 """
 
 import argparse
-import godunov
+import godunov as godunov_python
 import numpy as np
 import timeit
 
 
 def compute_sol(tmax, nmax, kernel='python'):
     """Solve Godunov problem using the selected kernel"""
-    if kernel == "python":  # Use native python or C++ with pythran
-        return godunov.timeloop(tmax, nmax)
-    elif kernel == "numpy":
+    if kernel == 'python':  # Use native (and naive!) python
+        return godunov_python.timeloop(tmax, nmax)
+    elif kernel == 'pythran':  # Use C++ with pythran
+        import godunov_pythran
+        return godunov_pythran.timeloop(tmax, nmax)
+    elif kernel == 'numpy':
         import godunov_numpy
         return godunov_numpy.timeloop(tmax, nmax)
-    elif kernel == "fortran":
+    elif kernel == 'fortran':
         import godunov_fortran
         # Allocate Fortran-ordered numpy arrays
         xm = np.zeros(nmax+2, order='F')
@@ -42,17 +45,14 @@ def main(tmax, nmax, profile=False, plot=False, kernel='python'):
     if profile:
         s = "xm, wn = compute_sol({}, {}, kernel='{}')".format(tmax, nmax,
                                                                kernel)
-        if kernel == 'python':
-            setup = "import godunov"
-        else:
-            setup = "import godunov_{}".format(kernel)
+        setup = "import godunov_{}".format(kernel)
         ntime = 10
         total_time = timeit.timeit(s, number=ntime, setup=setup,
                                    globals=globals())
         print("Mean time [s] over {} executions = {}".format(ntime,
               total_time/ntime))
 
-    wex = np.vectorize(godunov.sol_exact)(xm, tmax)
+    wex = np.vectorize(godunov_python.sol_exact)(xm, tmax)
 
     print("L2 error = {}".format(L2_err(wn, wex)))
 
@@ -74,7 +74,8 @@ if __name__ == '__main__':
                         help="activate profiling")
     parser.add_argument('--plot', action='store_true',
                         help="activate plotting")
-    parser.add_argument('--kernel', choices=['python', 'numpy', 'fortran'],
+    parser.add_argument('--kernel', choices=['python', 'pythran', 'numpy',
+                                             'fortran'],
                         default='python', help="select kernel type")
     args = parser.parse_args()
 
