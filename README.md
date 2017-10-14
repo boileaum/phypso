@@ -11,6 +11,12 @@ From the host:
 [host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso-env
 ```
 
+> **Note:** to run docker from a Mac with support for matplotlib display, simply run:
+
+> ```
+> [host] ./run_docker_mac.sh
+> ```
+
 Now from the container:
 
 ```
