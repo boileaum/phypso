@@ -9,7 +9,6 @@ Everything in `./burgers/` subdirectory. To get an environment ready for running
 [host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso-env
 [container] cd phypso/burgers
 [container] make
-[containers] pythran godunov.py
 ```
 
 ## Basic usage
@@ -18,7 +17,7 @@ Everything in `./burgers/` subdirectory. To get an environment ready for running
 
 ```
 usage: burgers.py [-h] [--tmax final_time] [--nmax number_of_pts] [--profile]
-                  [--plot] [--kernel {python,numpy,fortran}]
+                  [--plot] [--kernel {python,pythran,numpy,fortran}]
 
 Solve Burgers problem
 
@@ -28,7 +27,7 @@ optional arguments:
   --nmax number_of_pts  number of grid points
   --profile             activate profiling
   --plot                activate plotting
-  --kernel {python,numpy,fortran}
+  --kernel {python,pythran,numpy,fortran}
                         select kernel type
 ```
 
@@ -40,7 +39,7 @@ optional arguments:
 $ ./burgers.py --nmax 1000 --profile
 ```
 
-- Using the native numpy kernel (much faster):
+- Using the native numpy kernel (much faster but not optimal):
 
 ```
 $ ./burgers.py --nmax 1000 --profile --kernel numpy
@@ -61,16 +60,16 @@ pip install pythran
 
 ### Howto
 
-- Use pythran to compile the python submodule `godunov.py` to produce a `godunov.so` object file:
+- Use pythran to compile the python submodule `godunov.py` to produce a `pythran_godunov.so` object file:
 
 ```
-pythran godunov.py
+make pythran
 ```
 
 - Execute as if it where standard python
 
 ``` 
-python3 burgers.py 1.0 --nmax 1000 --profile
+./burgers.py 1.0 --nmax 1000 --profile
 ```
 
 ### Acceleration
@@ -103,13 +102,13 @@ L2 error = 0.036801482187378914
 - Compile the fortran file `godunov.f90` with `f2py`
 
 ```
-$ make
+make fortran
 ```
 
 - Run with the `--kernel fortran` option to use the compiled module
 
 ```
-$ ./burgers.py --profile --nmax 1000 --kernel fortran
+./burgers.py --profile --nmax 1000 --kernel fortran
 ```
 
 ### Acceleration
