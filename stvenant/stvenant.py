@@ -1,34 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Solve St-Venant's problem in 1D calling a Riemann solver in C
+Solve St-Venant's problem in 1D by calling a Riemann solver written in C
 (See https://docs.scipy.org/doc/numpy-1.13.0/user/c-info.python-as-glue.html#index-3)
 """
 
 from ctypes import cdll, c_double
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 
-hL = 2.
-uL = 0.
-hR = 1.
-uR = 0.
+hL, uL = 2., 0.
+hR, uR = 1., 0.
 
 wL = np.array([hL, hL*uL])
 wR = np.array([hR, hR*uR])
 
 nx = 1000
 
+w = np.zeros((nx, 2))
+
 xmin = -9.
 xmax = 9.
-dx = (xmax - xmin)/nx
+t = 1.0
+xi = np.linspace(xmin, xmax, num=nx)/t
 
-w = np.zeros((nx, 2))
-wtype = w[0].dtype
-x = np.linspace(xmin, xmax, num=nx)
-
-t = 1.
 
 # Load the C-library compiled with "make"
 libc = cdll.LoadLibrary("./libstvenant_c.so")
@@ -53,15 +50,24 @@ def riemann(wL, wR, xi):
     return w
 
 
-def stvenant():
+def stvenant(plot_file=False):
+    """main function that loops over x and plots the results"""
+    w = np.array([riemann(wL, wR, xi_j) for xi_j in xi])  # Loop over xi
 
-    w = np.array([riemann(wL, wR, xi) for xi in x])  # Loop over xi
+    plt.plot(xi, w[:, 0], label="h")
+    plt.plot(xi, w[:, 1]/w[:, 0], label="u")
 
-    plt.plot(x, w[:, 0], label="h")
-    plt.plot(x, w[:, 1]/w[:, 0], label="u")
+    if plot_file:
+        filename = "plotriem"
+        data = pd.read_csv("plotriem", delim_whitespace=True,
+                           header=None).values
+        xi_f, h_f, u_f = data[:, 0], data[:, 1], data[:, 2]
+        plt.plot(xi_f, h_f, 'g+', label="h_"+filename)
+        plt.plot(xi_f, u_f, 'k+', label="u_"+filename)
+
     plt.legend()
     plt.show()
 
 
 if __name__ == '__main__':
-    stvenant()
+    stvenant(plot_file=True)
