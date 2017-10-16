@@ -1,9 +1,7 @@
 __pycache__/
 *.pyc
 a.out
-exact
-exact.dat
-godu
-godu.dat
+*.exe
+*.o
 *.so
 *.so.dSYM
