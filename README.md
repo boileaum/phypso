@@ -1,4 +1,51 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Saint-Venant's equation solver](#saint-venants-equation-solver)
+  - [Installation](#installation)
+  - [Usage](#usage)
+- [Burgers' equation solver](#burgers-equation-solver)
+  - [Installation](#installation-1)
+  - [Basic usage](#basic-usage)
+    - [Get help with:](#get-help-with)
+    - [Examples:](#examples)
+  - [Use pythran to accelerate Python](#use-pythran-to-accelerate-python)
+    - [Installation on Mac](#installation-on-mac)
+    - [Howto](#howto)
+    - [Acceleration](#acceleration)
+  - [Use f2py to accelerate python](#use-f2py-to-accelerate-python)
+    - [Howto](#howto-1)
+    - [Acceleration](#acceleration-1)
+- [Developers' corner](#developers-corner)
+    - [Build the docker images](#build-the-docker-images)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# Saint-Venant's equation solver
+
+## Installation
+
+Compile the C-executables and C-library
+
+```
+cd stvenant
+make
+```
+
+## Usage
+
+Run using the python main program:
+
+```
+./stvenant.py
+```
+
+
+
 # Burgers' equation solver
+
+
 
 ## Installation 
 
