@@ -9,6 +9,7 @@ from ctypes import cdll, c_double
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from timeit import default_timer
 
 
 hL, uL = 2., 0.
@@ -52,7 +53,10 @@ def riemann(wL, wR, xi):
 
 def stvenant(plot_file=False):
     """main function that loops over x and plots the results"""
+    start_time = default_timer()  # Start timer
     w = np.array([riemann(wL, wR, xi_j) for xi_j in xi])  # Loop over xi
+    elapsed_time = default_timer() - start_time
+    print("Time to run Riemann solver [s]: {}".format(elapsed_time))
 
     plt.plot(xi, w[:, 0], label="h")
     plt.plot(xi, w[:, 1]/w[:, 0], label="u")
