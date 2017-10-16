@@ -2,6 +2,14 @@ FROM boileaum/phypso-deps:latest
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
 ENV REFRESHED_AT 2017-10-13
 
+RUN apt-get update --fix-missing && \
+      apt-get install -y \
+      sudo \
+      vim
+
+RUN apt-get clean && \
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Set up user so that we do not run as root
 RUN useradd -m -s /bin/bash -G sudo euler && \
     echo "euler ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
