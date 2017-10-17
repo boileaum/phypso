@@ -60,6 +60,7 @@ def stvenant(plot_file=False):
 
     plt.plot(xi, w[:, 0], label="h")
     plt.plot(xi, w[:, 1]/w[:, 0], label="u")
+    plt.xlabel(r'$\xi$')
 
     if plot_file:
         filename = "plotriem"
