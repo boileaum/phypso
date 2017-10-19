@@ -61,19 +61,6 @@ int main(void){
 
 }
 
-void xiloop(double *wL, double *wR, double *xi, int nx, double *w){
-
-  for(int i = 0; i <= nx; i++){
-    double wi[_M];
-    printf("%i/%i x[i]=%f hL=%f uL=%f hR=%f uR=%f\n", i, nx, xi[i], wL[0], wL[1], wR[0], wR[1]);
-    riemann(wL, wR, xi[i], wi);
-    printf("hi=%f ui=%f\n", wi[0], wi[1]);
-    w[i, 0] = wi[0];
-    w[i, 1] = wi[1];
-    printf("%i/%i hi=%f ui=%f\n", i, nx, w[i, 0], w[i, 1]);
-  }
-
-}
 
 double fz(double hL, double hR, double uL, double uR, double hs);
 double dfz(double hL, double hR, double uL, double uR, double hs);

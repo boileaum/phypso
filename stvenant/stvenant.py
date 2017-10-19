@@ -21,8 +21,6 @@ wR = np.array([hR, hR*uR])
 
 nx = 1000
 
-w = np.zeros((nx, 2))
-
 xmin = -9.
 xmax = 9.
 t = 1.0
@@ -64,53 +62,30 @@ def riemann(wL, wR, xi_j):
     return wi
 
 
-libc.xiloop.restype = None
-libc.xiloop.argtypes = [np.ctypeslib.ndpointer(float, ndim=1,  # wL
-                                               flags='aligned'),
-                        np.ctypeslib.ndpointer(float, ndim=1,  # wR
-                                               flags='aligned'),
-                        np.ctypeslib.ndpointer(float, ndim=1,  # xi
-                                               flags='aligned'),
-                        c_int,  # nx
-                        np.ctypeslib.ndpointer(float, ndim=2,  # w
-                                               flags='aligned, writeable')]
-
-
 @timer
 def riemann_loop_numpy(wL, wR, xi):
-    """Loop over xi to return w as a numpy array of size nx"""
+    """Loop over xi to return w as a numpy array of size nx using python
+    version of the Riemann solver"""
     return np.array([riemann_python(wL, wR, xi_j) for xi_j in xi])
 
 
 @timer
 def riemann_loop_numpy_C(wL, wR, xi):
     """Loop over xi to return w as a numpy array of size nx using C-version
-    of Riemann solver"""
+    of the Riemann solver"""
     return np.array([riemann(wL, wR, xi_j) for xi_j in xi])
-
-
-@timer
-def riemann_loop_C(wL, wR, xi):
-    """A wrapper to the C-function libc.riemann"""
-
-    wL = np.require(wL, float, ['ALIGNED'])
-    wR = np.require(wR, float, ['ALIGNED'])
-    xi = np.require(xi, float, ['ALIGNED'])
-    w = np.zeros((nx, 2))
-    w = np.require(w, float, ['ALIGNED'])
-    libc.xiloop(wL, wR, xi, nx, w)
-    return w
 
 
 def stvenant(plot_file=False):
     """main function that loops over x and plots the results"""
 
     w = riemann_loop_numpy(wL, wR, xi)
-    w = riemann_loop_numpy_C(wL, wR, xi)
-#    w = riemann_loop_C(wL, wR, xi)
+    w_C = riemann_loop_numpy_C(wL, wR, xi)
 
-    plt.plot(xi, w[:, 0], 'o', label="h")
-    plt.plot(xi, w[:, 1]/w[:, 0], 'o', label="u")
+    plt.plot(xi, w[:, 0], label="h")
+    plt.plot(xi, w[:, 1]/w[:, 0], label="u")
+    plt.plot(xi, w_C[:, 0], label="h_C")
+    plt.plot(xi, w_C[:, 1]/w[:, 0], label="u_C")
     plt.xlabel(r'$\xi$')
 
     if plot_file:
