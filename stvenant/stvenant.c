@@ -61,6 +61,20 @@ int main(void){
 
 }
 
+void xiloop(double *wL, double *wR, double *xi, int nx, double *w){
+
+  for(int i = 0; i <= nx; i++){
+    double wi[_M];
+    printf("%i/%i x[i]=%f hL=%f uL=%f hR=%f uR=%f\n", i, nx, xi[i], wL[0], wL[1], wR[0], wR[1]);
+    riemann(wL, wR, xi[i], wi);
+    printf("hi=%f ui=%f\n", wi[0], wi[1]);
+    w[i, 0] = wi[0];
+    w[i, 1] = wi[1];
+    printf("%i/%i hi=%f ui=%f\n", i, nx, w[i, 0], w[i, 1]);
+  }
+
+}
+
 double fz(double hL, double hR, double uL, double uR, double hs);
 double dfz(double hL, double hR, double uL, double uR, double hs);
 
@@ -86,14 +100,14 @@ void riemann(double *wL, double *wR, double xi, double *w){
 
   //assert(crit); // apparition du vide
 
-  printf("hL=%f uL=%f hR=%f uR=%f\n",hL,uL,hR,uR);
+  //printf("xi=%f, hL=%f uL=%f hR=%f uR=%f\n",xi, hL,uL,hR,uR);
 
   while(fabs(dh) > 1e-6){
     double f = fz(hL, hR, uL, uR, hs);
     double df = dfz(hL, hR, uL, uR, hs);
     dh = -f / df;
     hs += dh;
-    printf("hs=%f dh=%f f=%f df=%f\n",hs,dh,f,df);
+    //printf("hs=%f dh=%f f=%f df=%f\n",hs,dh,f,df);
   }
 
   double us = uR + (hs - hR) * Z(hs,hR);
@@ -124,7 +138,7 @@ void riemann(double *wL, double *wR, double xi, double *w){
     v2p = v2m;
   }
 
-  printf("v1m=%f v1p=%f v2m=%f v2p=%f\n",v1m,v1p,v2m,v2p);
+  //printf("v1m=%f v1p=%f v2m=%f v2p=%f\n",v1m,v1p,v2m,v2p);
 
   double h,u;
 
