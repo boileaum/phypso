@@ -5,3 +5,5 @@ a.out
 *.o
 *.so
 *.so.dSYM
+
+burgers/godunov.cpp
