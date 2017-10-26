@@ -63,24 +63,24 @@ def riemann(wL, wR, xi_j):
 
 
 @timer
-def riemann_loop_numpy(wL, wR, xi):
-    """Loop over xi to return w as a numpy array of size nx using python
-    version of the Riemann solver"""
-    return np.array([riemann_python(wL, wR, xi_j) for xi_j in xi])
-
-
-@timer
-def riemann_loop_numpy_C(wL, wR, xi):
+def riemann_loop_C(wL, wR, xi):
     """Loop over xi to return w as a numpy array of size nx using C-version
     of the Riemann solver"""
     return np.array([riemann(wL, wR, xi_j) for xi_j in xi])
 
 
+@timer
+def riemann_loop(wL, wR, xi):
+    """Loop over xi to return w as a numpy array of size nx using python
+    version of the Riemann solver"""
+    return np.array([riemann_python(wL, wR, xi_j) for xi_j in xi])
+
+
 def stvenant(plot_file=False):
     """main function that loops over x and plots the results"""
 
-    w_py = riemann_loop_numpy(wL, wR, xi)
-    w_C = riemann_loop_numpy_C(wL, wR, xi)
+    w_py = riemann_loop(wL, wR, xi)
+    w_C = riemann_loop_C(wL, wR, xi)
 
     plt.plot(xi, w_py[:, 0], label="h_py")
     plt.plot(xi, w_py[:, 1]/w_py[:, 0], label="u_py")
