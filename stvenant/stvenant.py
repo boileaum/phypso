@@ -79,13 +79,13 @@ def riemann_loop_numpy_C(wL, wR, xi):
 def stvenant(plot_file=False):
     """main function that loops over x and plots the results"""
 
-    w = riemann_loop_numpy(wL, wR, xi)
+    w_py = riemann_loop_numpy(wL, wR, xi)
     w_C = riemann_loop_numpy_C(wL, wR, xi)
 
-    plt.plot(xi, w[:, 0], label="h")
-    plt.plot(xi, w[:, 1]/w[:, 0], label="u")
+    plt.plot(xi, w_py[:, 0], label="h_py")
+    plt.plot(xi, w_py[:, 1]/w_py[:, 0], label="u_py")
     plt.plot(xi, w_C[:, 0], label="h_C")
-    plt.plot(xi, w_C[:, 1]/w[:, 0], label="u_C")
+    plt.plot(xi, w_C[:, 1]/w_C[:, 0], label="u_C")
     plt.xlabel(r'$\xi$')
 
     if plot_file:
