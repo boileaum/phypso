@@ -9,6 +9,8 @@ import godunov as godunov_python
 import numpy as np
 import timeit
 
+KERNELS = set(('python', 'pythran', 'numpy', 'numba', 'fortran'))
+
 
 def compute_sol(tmax, nmax, kernel='python'):
     """Solve Godunov problem using the selected kernel"""
@@ -79,8 +81,7 @@ if __name__ == '__main__':
                         help="activate profiling")
     parser.add_argument('--plot', action='store_true',
                         help="activate plotting")
-    parser.add_argument('--kernel', choices=['python', 'pythran', 'numpy',
-                                             'numba', 'fortran'],
+    parser.add_argument('--kernel', choices=KERNELS,
                         default='python', help="select kernel type")
     args = parser.parse_args()
 
