@@ -21,8 +21,10 @@ RUN pip3 install --upgrade pip && \
     pip3 install colorlog && \
     pip3 install scipy && \
     pip3 install matplotlib && \
+    pip3 install numba && \
     pip3 install pythran && \
     pip3 install pandas && \
+    pip3 install pytest && \
     rm -rf ~/.cache/pip/
 
 CMD /bin/bash
