@@ -20,6 +20,9 @@ def compute_sol(tmax, nmax, kernel='python'):
     elif kernel == 'numpy':
         import godunov_numpy
         return godunov_numpy.timeloop(tmax, nmax)
+    elif kernel == 'numba':
+        import godunov_numba
+        return godunov_numba.timeloop(tmax, nmax)
     elif kernel == 'fortran':
         import godunov_fortran
         # Allocate Fortran-ordered numpy arrays
@@ -53,7 +56,8 @@ def main(tmax, nmax, profile=False, plot=False, kernel='python'):
 
     wex = np.vectorize(godunov_python.sol_exact)(xm, tmax)
 
-    print("L2 error = {}".format(L2_err(wn, wex)))
+    error = L2_err(wn, wex)
+    print("L2 error = {}".format(error))
 
     if plot:
         import matplotlib.pyplot as plt
@@ -61,6 +65,8 @@ def main(tmax, nmax, profile=False, plot=False, kernel='python'):
         plt.plot(xm[1:-1], wn[1:-1], 'k-', label='godunov')
         plt.legend()
         plt.show()
+
+    return error
 
 
 if __name__ == '__main__':
@@ -74,7 +80,7 @@ if __name__ == '__main__':
     parser.add_argument('--plot', action='store_true',
                         help="activate plotting")
     parser.add_argument('--kernel', choices=['python', 'pythran', 'numpy',
-                                             'fortran'],
+                                             'numba', 'fortran'],
                         default='python', help="select kernel type")
     args = parser.parse_args()
 
