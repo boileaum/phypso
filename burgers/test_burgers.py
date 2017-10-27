@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Oct 27 09:41:39 2017
-
-@author: boileau
+Check that error of the Godunov solver with various kernel versions
 """
 
 from burgers import main, KERNELS
