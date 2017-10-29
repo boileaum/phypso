@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Solve St-Venant's problem in 1D by calling a Riemann solver written in C
-(See https://docs.scipy.org/doc/numpy-1.13.0/user/c-info.python-as-glue.html#index-3)
+Solve St-Venant's problem in 1D by calling a Riemann solver written in C.
+See:
+https://docs.scipy.org/doc/numpy-1.13.0/user/c-info.python-as-glue.html#index-3
 """
 
 from ctypes import cdll, c_double
