@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Check that error of the Godunov solver with various kernel versions
+Check that numerical error of the Godunov solver with various kernel versions
 """
 
 from burgers import main, KERNELS

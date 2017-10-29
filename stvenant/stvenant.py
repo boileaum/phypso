@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from timeit import default_timer
-from riemann import riemann as riemann_python
+from riemann import riemann_python
 import functools
 
 hL, uL = 2., 0.
@@ -34,7 +34,9 @@ def timer(func):
         start_time = default_timer()  # Start timer
         result = func(*args, **kwargs)
         elapsed_time = default_timer() - start_time
-        print("Time to run {} [s]: {:f}".format(func.__name__, elapsed_time))
+        print("Time to run {} with {} [s]: {:f}".format(func.__name__,
+                                                        args[0].__name__,
+                                                        elapsed_time))
         return result
     return func_call
 
@@ -52,7 +54,7 @@ libc.riemann.argtypes = [np.ctypeslib.ndpointer(float, ndim=1,  # wL
                                                       'writeable')]
 
 
-def riemann(wL, wR, xi_j):
+def riemann_C(wL, wR, xi_j):
     """A wrapper to the C-function libc.riemann"""
 
     wL = np.require(wL, float, ['ALIGNED'])
@@ -63,21 +65,14 @@ def riemann(wL, wR, xi_j):
 
 
 @timer
-def riemann_loop_C(wL, wR, xi):
-    """Loop over xi to return w as a numpy array of size nx using C-version
-    of the Riemann solver"""
-    return np.array([riemann(wL, wR, xi_j) for xi_j in xi])
-
-
-@timer
-def riemann_loop(wL, wR, xi):
-    """Loop over xi to return w as a numpy array of size nx using python
-    version of the Riemann solver"""
-    return np.array([riemann_python(wL, wR, xi_j) for xi_j in xi])
+def riemann_loop(riemann_func, wL, wR, xi):
+    """Loop over xi to return w as a numpy array of size nx using the
+    Riemann solver provided by the riemann_func function"""
+    return np.array([riemann_func(wL, wR, xi_j) for xi_j in xi])
 
 
 def load_file(filename="plotriem"):
-    """Reads file and return a x, h, u tuple"""
+    """Reads file and return a (x, h, u) tuple"""
     data = pd.read_csv(filename, delim_whitespace=True, header=None).values
     return data[:, 0], data[:, 1], data[:, 2]
 
@@ -85,8 +80,8 @@ def load_file(filename="plotriem"):
 def stvenant(plot_file=False):
     """main function that loops over x and plots the results"""
 
-    w_py = riemann_loop(wL, wR, xi)
-    w_C = riemann_loop_C(wL, wR, xi)
+    w_py = riemann_loop(riemann_python, wL, wR, xi)
+    w_C = riemann_loop(riemann_C, wL, wR, xi)
 
     plt.plot(xi, w_py[:, 0], label="h_py")
     plt.plot(xi, w_py[:, 1]/w_py[:, 0], label="u_py")

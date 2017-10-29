@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Test if results are identical to reference data from C version
+Test if results are identical to the reference data from C version
 """
 
-from stvenant import wL, wR, xi, load_file, riemann_loop, riemann_loop_C
-from pytest import fixture
+from stvenant import wL, wR, xi, load_file
+from stvenant import riemann_loop, riemann_C, riemann_python
+from pytest import fixture, mark
 
 
 @fixture
@@ -20,17 +21,11 @@ def test_xi(ref_data):
     assert xi.all() == x_ref.all()
 
 
-def test_loop_python(ref_data):
-    """Test full python version"""
+@mark.parametrize('riemann_func', [riemann_python, riemann_C])
+def test_loop(ref_data, riemann_func):
+    """Test xi-loop riemann_loop for various implementations of the
+    riemmann solver function"""
     x_ref, h_ref, u_ref = ref_data
-    w = riemann_loop(wL, wR, xi)
-    assert w[:, 0].all() == h_ref.all()
-    assert w[:, 1].all() == u_ref.all()
-
-
-def test_loop_C(ref_data):
-    """Test python calling a C kernel"""
-    x_ref, h_ref, u_ref = ref_data
-    w = riemann_loop_C(wL, wR, xi)
+    w = riemann_loop(riemann_func, wL, wR, xi)
     assert w[:, 0].all() == h_ref.all()
     assert w[:, 1].all() == u_ref.all()
