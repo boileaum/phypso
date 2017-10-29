@@ -6,5 +6,5 @@ a.out
 *.o
 *.so
 *.so.dSYM
-
+build/
 burgers/godunov.cpp

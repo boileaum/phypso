@@ -5,7 +5,7 @@ Test if results are identical to the reference data from C version
 """
 
 from stvenant import wL, wR, xi, load_file
-from stvenant import riemann_loop, riemann_C, riemann_python
+from stvenant import riemann_loop, riemann_C, riemann_python, riemann_cython
 from pytest import fixture, mark
 
 
@@ -21,7 +21,7 @@ def test_xi(ref_data):
     assert xi.all() == x_ref.all()
 
 
-@mark.parametrize('riemann_func', [riemann_python, riemann_C])
+@mark.parametrize('riemann_func', [riemann_python, riemann_C, riemann_cython])
 def test_loop(ref_data, riemann_func):
     """Test xi-loop riemann_loop for various implementations of the
     riemmann solver function"""

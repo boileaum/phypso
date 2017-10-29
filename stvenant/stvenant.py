@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from timeit import default_timer
+from cstvenant import riemann_cython
 from riemann import riemann_python
 import functools
 
@@ -83,11 +84,14 @@ def stvenant(plot_file=False):
 
     w_py = riemann_loop(riemann_python, wL, wR, xi)
     w_C = riemann_loop(riemann_C, wL, wR, xi)
+    w_Cy = riemann_loop(riemann_cython, wL, wR, xi)
 
     plt.plot(xi, w_py[:, 0], label="h_py")
     plt.plot(xi, w_py[:, 1]/w_py[:, 0], label="u_py")
     plt.plot(xi, w_C[:, 0], label="h_C")
     plt.plot(xi, w_C[:, 1]/w_C[:, 0], label="u_C")
+    plt.plot(xi, w_Cy[:, 0], label="h_Cython")
+    plt.plot(xi, w_Cy[:, 1]/w_C[:, 0], label="u_Cython")
     plt.xlabel(r'$\xi$')
 
     if plot_file:
