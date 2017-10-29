@@ -5,17 +5,21 @@ Check that numerical error of the Godunov solver with various kernel versions
 """
 
 from burgers import burgers, KERNELS
-from pytest import mark, approx
+from pytest import mark, approx, param
 import itertools
 import sys
 
-if sys.platform == "darwin":
-    # pythran translation does not work on Mac currently
-    print("Warning: pythran kernel not tested")
-    KERNELS.remove("pythran")
+
+cartesian_product = itertools.product([100, 1000], KERNELS)
+reason = "Skipped because pythran translation does not work on Mac currently"
+nmax_kernel_combinations = [couple if couple[1] != "pythran" else
+                            param(couple[0], couple[1],
+                                  marks=mark.skipif(sys.platform == "darwin",
+                                  reason=reason))
+                            for couple in cartesian_product]
 
 
-@mark.parametrize('nmax, kernel', itertools.product([100, 1000], KERNELS))
+@mark.parametrize('nmax, kernel', nmax_kernel_combinations)
 def test_nmax_kernel(nmax, kernel):
     """Test a combination of nmax values and kernel versions and compare to
     expected numerical error"""
