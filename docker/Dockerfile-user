@@ -8,6 +8,7 @@ RUN sudo chown -R euler:euler $HOME
 WORKDIR $HOME/phypso/burgers
 RUN make
 RUN pythran godunov.py
+RUN cd $HOME/phypso/stvenant && make
 
 CMD /bin/bash
 

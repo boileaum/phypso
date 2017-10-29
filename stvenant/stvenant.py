@@ -5,7 +5,7 @@ Solve St-Venant's problem in 1D by calling a Riemann solver written in C
 (See https://docs.scipy.org/doc/numpy-1.13.0/user/c-info.python-as-glue.html#index-3)
 """
 
-from ctypes import cdll, c_double, c_int
+from ctypes import cdll, c_double
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -19,7 +19,7 @@ hR, uR = 1., 0.
 wL = np.array([hL, hL*uL])
 wR = np.array([hR, hR*uR])
 
-nx = 1000
+nx = 1001
 
 xmin = -9.
 xmax = 9.
@@ -76,6 +76,12 @@ def riemann_loop(wL, wR, xi):
     return np.array([riemann_python(wL, wR, xi_j) for xi_j in xi])
 
 
+def load_file(filename="plotriem"):
+    """Reads file and return a x, h, u tuple"""
+    data = pd.read_csv(filename, delim_whitespace=True, header=None).values
+    return data[:, 0], data[:, 1], data[:, 2]
+
+
 def stvenant(plot_file=False):
     """main function that loops over x and plots the results"""
 
@@ -90,9 +96,7 @@ def stvenant(plot_file=False):
 
     if plot_file:
         filename = "plotriem"
-        data = pd.read_csv("plotriem", delim_whitespace=True,
-                           header=None).values
-        xi_f, h_f, u_f = data[:, 0], data[:, 1], data[:, 2]
+        xi_f, h_f, u_f = load_file(filename)
         plt.plot(xi_f, h_f, 'g+', label="h_"+filename)
         plt.plot(xi_f, u_f, 'k+', label="u_"+filename)
 
