@@ -40,7 +40,7 @@ def L2_err(sol, ref, norm=1.0):
     return np.linalg.norm(sol - ref, ord=2)/np.sqrt(N)/norm
 
 
-def main(tmax, nmax, profile=False, plot=False, kernel='python'):
+def burgers(tmax, nmax, profile=False, plot=False, kernel='python'):
 
     print("tmax =", tmax)
     print("nmax =", nmax)
@@ -85,4 +85,4 @@ if __name__ == '__main__':
                         default='python', help="select kernel type")
     args = parser.parse_args()
 
-    main(args.tmax, args.nmax, args.profile, args.plot, args.kernel)
+    burgers(args.tmax, args.nmax, args.profile, args.plot, args.kernel)

@@ -1,9 +1,10 @@
 __pycache__/
+.cache
 *.pyc
 a.out
 *.exe
 *.o
 *.so
 *.so.dSYM
-
+build/
 burgers/godunov.cpp

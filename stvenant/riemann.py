@@ -19,7 +19,7 @@ def Z(h1, h2):
         return sqrt(g*(h1 + h2)/h1/h2/2.)
 
 
-def riemann(wL, wR, xi):
+def riemann_python(wL, wR, xi):
 
     def fz(hL, hR, uL, uR, hs):
 

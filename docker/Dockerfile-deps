@@ -25,6 +25,7 @@ RUN pip3 install --upgrade pip && \
     pip3 install pythran && \
     pip3 install pandas && \
     pip3 install pytest && \
+    pip3 install Cython && \
     rm -rf ~/.cache/pip/
 
 CMD /bin/bash
