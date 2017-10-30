@@ -11,9 +11,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from timeit import default_timer
-from cstvenant import riemann_cython
-from riemann import riemann_python
 import functools
+import sys
+
+
+KERNELS = ['python', 'C', 'cython', 'pythran']
+
 
 hL, uL = 2., 0.
 hR, uR = 1., 0.
@@ -37,7 +40,7 @@ def timer(func):
         result = func(*args, **kwargs)
         elapsed_time = default_timer() - start_time
         print("Time to run {} with {} [s]: {:f}".format(func.__name__,
-                                                        args[0].__name__,
+                                                        args[0],
                                                         elapsed_time))
         return result
     return func_call
@@ -67,9 +70,16 @@ def riemann_C(wL, wR, xi_j):
 
 
 @timer
-def riemann_loop(riemann_func, wL, wR, xi):
+def riemann_loop(kernel, wL, wR, xi):
     """Loop over xi to return w as a numpy array of size nx using the
     Riemann solver provided by the riemann_func function"""
+    if kernel == "cython":
+        from cstvenant import riemann_cython
+    elif kernel == "python":
+        from riemann import riemann as riemann_python
+    elif kernel == "pythran":
+        from riemann_pythran import riemann as riemann_pythran
+    riemann_func = dict(globals(), **locals())['riemann_{}'.format(kernel)]
     return np.array([riemann_func(wL, wR, xi_j) for xi_j in xi])
 
 
@@ -82,16 +92,15 @@ def load_file(filename="plotriem"):
 def stvenant(plot_file=False):
     """main function that loops over x and plots the results"""
 
-    w_py = riemann_loop(riemann_python, wL, wR, xi)
-    w_C = riemann_loop(riemann_C, wL, wR, xi)
-    w_Cy = riemann_loop(riemann_cython, wL, wR, xi)
+    if sys.platform == "darwin":
+        print("Skip pythran kernel because it does not work on Mac currently")
+        KERNELS.remove("pythran")
 
-    plt.plot(xi, w_py[:, 0], label="h_py")
-    plt.plot(xi, w_py[:, 1]/w_py[:, 0], label="u_py")
-    plt.plot(xi, w_C[:, 0], label="h_C")
-    plt.plot(xi, w_C[:, 1]/w_C[:, 0], label="u_C")
-    plt.plot(xi, w_Cy[:, 0], label="h_Cython")
-    plt.plot(xi, w_Cy[:, 1]/w_C[:, 0], label="u_Cython")
+    for kernel in KERNELS:
+        w = riemann_loop(kernel, wL, wR, xi)
+        plt.plot(xi, w[:, 0], label="h_"+kernel)
+        plt.plot(xi, w[:, 1]/w[:, 0], label="u_"+kernel)
+
     plt.xlabel(r'$\xi$')
 
     if plot_file:

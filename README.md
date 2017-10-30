@@ -1,5 +1,9 @@
 # PHYPSO
 
+A set of very simple hyperbolic solvers using techniques to use efficient computing kernels called from a python main program. 
+
+### Table of content
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -29,7 +33,7 @@
 
 ### Installation
 
-Compile the C-executables and C-library
+Compile the C-executables, C-library, Cython and pythran versions
 
 ```
 cd stvenant
