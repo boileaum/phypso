@@ -3,7 +3,7 @@ COPTS= -fPIC
 
 .PHONY: clean
 
-all: C libC
+all: C libC Cython
 
 C:
 	gcc stvenant.c -lm -o stvenant.exe
@@ -11,6 +11,9 @@ C:
 libC:
 	gcc $(COPTS) -c stvenant.c 
 	gcc $(COPTS) -shared -o libstvenant_c.so stvenant.o
+
+Cython:
+	python3 setup.py build_ext --inplace
 
 clean:
 	rm -rf *.o *.out *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM
