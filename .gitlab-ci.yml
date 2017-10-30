@@ -14,12 +14,12 @@ t:docker:burgers:
   tags:
     - shell
   script:
-    - docker run boileaum/phypso /bin/bash -c 'cd burgers && pytest'
+    - docker run boileaum/phypso /bin/bash -c 'cd phypso/burgers && pytest'
 
 t:docker:stvenant:
   stage: test
   tags:
     - shell
   script:
-    - docker run boileaum/phypso /bin/bash -c 'cd stvenant && pytest'
+    - docker run boileaum/phypso /bin/bash -c 'cd phypso/stvenant && pytest'
 
