@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Oct 19 16:04:59 2017
-
-@author: boileau
+A python version of St-Venant Riemann solver
 """
 
 from math import sqrt
@@ -52,7 +50,7 @@ def riemann_python(wL, wR, xi):
         if hs < hL:
             c = 0.6264183906e1/(sqrt(hs) + sqrt(hL))
         else:
-            c = sqrt((4.905 * hs + 4.905 * hL) / hs / hL)
+            c = sqrt((4.905*hs + 4.905*hL) / hs / hL)
 
         if hs < hL:
             d = -0.3132091953e1*pow(sqrt(hs) + sqrt(hL), -0.2e1) \
@@ -72,7 +70,7 @@ def riemann_python(wL, wR, xi):
     hs = 1e-8
     dh = 1e8
 
-    crit = (uR - uL < 2 * sqrt(g) * (sqrt(hL) - sqrt(hR)))
+    crit = (uR - uL < 2*sqrt(g)*(sqrt(hL) - sqrt(hR)))
     assert(crit)  # Void appears
 
     while(abs(dh) > 1e-6):
@@ -82,7 +80,7 @@ def riemann_python(wL, wR, xi):
         dh = -f / df
         hs += dh
 
-    us = uR + (hs - hR) * Z(hs, hR)
+    us = uR + (hs - hR)*Z(hs, hR)
 
     # left wave
     if hs < hL:  # 1-expansion
@@ -90,7 +88,7 @@ def riemann_python(wL, wR, xi):
         v1p = us - sqrt(g*hs)
     else:  # 1-chock
         hc = (hs + hL)/2
-        alpha = sqrt(hs)/(sqrt(hs)+sqrt(hL))
+        alpha = sqrt(hs)/(sqrt(hs) + sqrt(hL))
         uc = alpha*us + (1 - alpha)*uL
         v1m = uc - sqrt(g*hc)
         v1p = v1m
@@ -110,7 +108,7 @@ def riemann_python(wL, wR, xi):
         u = uL
         h = hL
     elif xi < v1p:
-        u = (2*xi + uL + 2*sqrt(g * hL))/3
+        u = (2*xi + uL + 2*sqrt(g*hL))/3
         h = (u - xi)*(u - xi)/g
     elif xi < v2m:
         u = us
