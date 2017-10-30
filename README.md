@@ -1,6 +1,6 @@
 # PHYPSO
 
-A set of very simple hyperbolic solvers using techniques to use efficient python. 
+A set of very simple hyperbolic solvers using techniques to use efficient computing kernels called from a python main program. 
 
 ### Table of content
 
@@ -33,7 +33,7 @@ A set of very simple hyperbolic solvers using techniques to use efficient python
 
 ### Installation
 
-Compile the C-executables, C-library and Cython version
+Compile the C-executables, C-library, Cython and pythran versions
 
 ```
 cd stvenant
