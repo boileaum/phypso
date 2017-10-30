@@ -5,21 +5,21 @@ stages:
 b:docker:
   stage: build
   tags:
-    - shell
+    - shell, docker
   script:
     - docker build --pull -t boileaum/phypso:latest  -f ./docker/Dockerfile-user .
 
 t:docker:burgers:
   stage: test
   tags:
-    - shell
+    - shell, docker
   script:
     - docker run boileaum/phypso /bin/bash -c 'cd burgers && pytest -v'
 
 t:docker:stvenant:
   stage: test
   tags:
-    - shell
+    - shell, docker
   script:
     - docker run boileaum/phypso /bin/bash -c 'cd stvenant && pytest -v'
 
