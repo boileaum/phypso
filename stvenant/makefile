@@ -3,7 +3,7 @@ COPTS= -fPIC
 
 .PHONY: clean
 
-all: C libC Cython
+all: C libC Cython pythran
 
 C:
 	gcc stvenant.c -lm -o stvenant.exe
@@ -14,6 +14,9 @@ libC:
 
 Cython:
 	python3 setup.py build_ext --inplace
+
+pythran:
+	pythran riemann.py -o riemann_pythran.so
 
 clean:
 	rm -rf *.o *.out *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM

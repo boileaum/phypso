@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#pythran export riemann(float[:], float[:], float)
+#pythran export Z(float, float)
 """
 A python version of St-Venant Riemann solver
 """
@@ -17,7 +19,7 @@ def Z(h1, h2):
         return sqrt(g*(h1 + h2)/h1/h2/2.)
 
 
-def riemann_python(wL, wR, xi):
+def riemann(wL, wR, xi):
 
     def fz(hL, hR, uL, uR, hs):
 
