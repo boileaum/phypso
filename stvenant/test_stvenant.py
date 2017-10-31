@@ -33,6 +33,6 @@ def test_loop(ref_data, kernel):
     """Test xi-loop riemann_loop for various implementations of the
     riemmann solver function"""
     x_ref, h_ref, u_ref = ref_data
-    w = riemann_loop(kernel, wL, wR, xi)
+    w = riemann_loop(wL, wR, xi, kernel)
     assert w[:, 0].all() == h_ref.all()
     assert w[:, 1].all() == u_ref.all()

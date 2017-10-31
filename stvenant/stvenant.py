@@ -15,7 +15,7 @@ import functools
 import sys
 
 
-KERNELS = ['python', 'C', 'cython', 'pythran']
+KERNELS = ['python', 'C-lib', 'cython', 'pythran']
 
 
 hL, uL = 2., 0.
@@ -40,7 +40,7 @@ def timer(func):
         result = func(*args, **kwargs)
         elapsed_time = default_timer() - start_time
         print("Time to run {} with {} [s]: {:f}".format(func.__name__,
-                                                        args[0],
+                                                        args[3],
                                                         elapsed_time))
         return result
     return func_call
@@ -70,17 +70,20 @@ def riemann_C(wL, wR, xi_j):
 
 
 @timer
-def riemann_loop(kernel, wL, wR, xi):
+def riemann_loop(wL, wR, xi, kernel):
     """Loop over xi to return w as a numpy array of size nx using the
     Riemann solver provided by the riemann_func function"""
-    if kernel == "cython":
-        from cstvenant import riemann_cython
-    elif kernel == "python":
-        from riemann import riemann as riemann_python
+    if kernel == "python":
+        from riemann import riemann
+    elif kernel == "cython":
+        from cstvenant import riemann_cython as riemann
     elif kernel == "pythran":
-        from riemann_pythran import riemann as riemann_pythran
-    riemann_func = dict(globals(), **locals())['riemann_{}'.format(kernel)]
-    return np.array([riemann_func(wL, wR, xi_j) for xi_j in xi])
+        from riemann_pythran import riemann
+    elif kernel == "C-lib":
+        riemann = riemann_C
+    else:
+        sys.exit("Unknown kernel")
+    return np.array([riemann(wL, wR, xi_j) for xi_j in xi])
 
 
 def load_file(filename="plotriem"):
@@ -97,7 +100,7 @@ def stvenant(plot_file=False):
         KERNELS.remove("pythran")
 
     for kernel in KERNELS:
-        w = riemann_loop(kernel, wL, wR, xi)
+        w = riemann_loop(wL, wR, xi, kernel)
         plt.plot(xi, w[:, 0], label="h_"+kernel)
         plt.plot(xi, w[:, 1]/w[:, 0], label="u_"+kernel)
 
