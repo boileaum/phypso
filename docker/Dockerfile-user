@@ -1,6 +1,5 @@
 FROM boileaum/phypso-env:latest
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
-ENV REFRESHED_AT 2017-10-13
 
 COPY . $HOME/phypso
 RUN sudo chown -R euler:euler $HOME
