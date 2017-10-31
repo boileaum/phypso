@@ -4,5 +4,5 @@ SUBDIRS = burgers stvenant
 
 all clean:
 	for dir in $(SUBDIRS); do \
-	$(MAKE) -C $$dir -f Makefile $@; \
+	$(MAKE) -C $$dir -f makefile $@; \
 	done
