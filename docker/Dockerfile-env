@@ -1,6 +1,5 @@
 FROM boileaum/phypso-deps:latest
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
-ENV REFRESHED_AT 2017-10-13
 
 RUN apt-get update --fix-missing && \
       apt-get install -y \

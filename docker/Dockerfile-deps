@@ -16,16 +16,9 @@ RUN apt-get update --fix-missing && \
 RUN apt-get clean && \
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+COPY requirements.txt .
 RUN pip3 install --upgrade pip && \
-    pip3 install numpy && \
-    pip3 install colorlog && \
-    pip3 install scipy && \
-    pip3 install matplotlib && \
-    pip3 install numba && \
-    pip3 install pythran && \
-    pip3 install pandas && \
-    pip3 install pytest && \
-    pip3 install Cython && \
+    pip3 install -r requirements.txt && \
     rm -rf ~/.cache/pip/
 
 CMD /bin/bash

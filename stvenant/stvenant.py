@@ -10,6 +10,7 @@ import argparse
 from ctypes import cdll, c_double
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import pandas as pd
 from timeit import default_timer
 import functools
@@ -49,7 +50,9 @@ def timer(func):
 
 
 # Load the C-library compiled with "make"
-libc = cdll.LoadLibrary("./libstvenant_c.so")
+
+lib_filename = os.path.join(os.path.dirname(__file__), 'libstvenant_c.so')
+libc = cdll.LoadLibrary(lib_filename)
 # Explicit the C-function argument types
 libc.riemann.argtypes = [np.ctypeslib.ndpointer(float, ndim=1,  # wL
                                                 flags='aligned'),
@@ -90,13 +93,18 @@ def riemann_loop(kernel, wL, wR, xi):
 
 def load_file(filename="plotriem"):
     """Reads file and return a (x, h, u) tuple"""
-    data = pd.read_csv(filename, delim_whitespace=True, header=None).values
+    file_path = os.path.join(os.path.dirname(__file__), filename)
+    data = pd.read_csv(file_path, delim_whitespace=True, header=None).values
     return data[:, 0], data[:, 1], data[:, 2]
 
 
 @timer
 def C_program(name):
     """Run the full C program"""
+    cwd = os.getcwd()
+    program_dir = os.path.dirname(__file__)
+    os.chdir(program_dir)
+
     cmd = [name] + ['{}'.format(arg) for arg in
                     (hL, uL, hR, uR, nx - 1, xmin, xmax, t)]
 
@@ -108,6 +116,8 @@ def C_program(name):
               "  {}\n"
               "returns:".format(" ".join(cmd)))
         print(e.stderr.decode(), '\033[0m')
+
+    os.chdir(cwd)
 
 
 def stvenant(plot=False):

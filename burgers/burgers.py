@@ -53,13 +53,13 @@ def burgers(tmax, nmax, profile=False, plot=False, kernel='python'):
         ntime = 10
         total_time = timeit.timeit(s, number=ntime, globals=globals())
 
-        print("Mean time [s] over {} executions = {}".format(ntime,
+        print("Mean time [s] over {} executions = {:f}".format(ntime,
               total_time/ntime))
 
     wex = np.vectorize(godunov_python.sol_exact)(xm, tmax)
 
     error = L2_err(wn, wex)
-    print("L2 error = {}".format(error))
+    print("L2 error = {:f}".format(error))
 
     if plot:
         import matplotlib.pyplot as plt

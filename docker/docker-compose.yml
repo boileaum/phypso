@@ -3,8 +3,8 @@ version: '2'
 services:
   deps:
     build:
-      context: .
-      dockerfile: Dockerfile-deps
+      context: ..
+      dockerfile: docker/Dockerfile-deps
     image: boileaum/phypso-deps:latest
 
   env:

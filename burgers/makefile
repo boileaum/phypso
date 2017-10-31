@@ -16,4 +16,4 @@ pythran:
 	pythran godunov.py -o godunov_pythran.so
 
 clean:
-	rm -rf *.o *.out *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM
+	rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__
