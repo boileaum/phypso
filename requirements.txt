@@ -1,0 +1,10 @@
+colorlog
+Cython
+matplotlib
+numba
+numpy
+pandas
+pytest
+pythran
+pytz
+scipy

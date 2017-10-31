@@ -5,12 +5,8 @@ ENV REFRESHED_AT 2017-10-13
 COPY . $HOME/phypso
 RUN sudo chown -R euler:euler $HOME
 
-WORKDIR $HOME/phypso/burgers
-RUN make
-RUN pythran godunov.py
-WORKDIR $HOME/phypso/stvenant
-RUN make
 WORKDIR $HOME/phypso
+RUN make
 
 CMD /bin/bash
 
