@@ -6,12 +6,14 @@ See:
 https://docs.scipy.org/doc/numpy-1.13.0/user/c-info.python-as-glue.html#index-3
 """
 
+import argparse
 from ctypes import cdll, c_double
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from timeit import default_timer
 import functools
+import subprocess
 import sys
 
 
@@ -40,7 +42,7 @@ def timer(func):
         result = func(*args, **kwargs)
         elapsed_time = default_timer() - start_time
         print("Time to run {} with {} [s]: {:f}".format(func.__name__,
-                                                        args[3],
+                                                        args[0],
                                                         elapsed_time))
         return result
     return func_call
@@ -70,7 +72,7 @@ def riemann_C(wL, wR, xi_j):
 
 
 @timer
-def riemann_loop(wL, wR, xi, kernel):
+def riemann_loop(kernel, wL, wR, xi):
     """Loop over xi to return w as a numpy array of size nx using the
     Riemann solver provided by the riemann_func function"""
     if kernel == "python":
@@ -92,29 +94,50 @@ def load_file(filename="plotriem"):
     return data[:, 0], data[:, 1], data[:, 2]
 
 
-def stvenant(plot_file=False):
+@timer
+def C_program(name):
+    """Run the full C program"""
+    cmd = [name] + ['{}'.format(arg) for arg in
+                    (hL, uL, hR, uR, nx - 1, xmin, xmax, t)]
+
+    try:
+        subprocess.run(cmd, check=True, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as e:
+        print("\033[31mError in C program {}".format(cmd[0]))
+        print("Command line:\n"
+              "  {}\n"
+              "returns:".format(" ".join(cmd)))
+        print(e.stderr.decode(), '\033[0m')
+
+
+def stvenant(plot=False):
     """main function that loops over x and plots the results"""
+    C_program("./stvenant.exe")
 
     if sys.platform == "darwin":
         print("Skip pythran kernel because it does not work on Mac currently")
         KERNELS.remove("pythran")
 
     for kernel in KERNELS:
-        w = riemann_loop(wL, wR, xi, kernel)
-        plt.plot(xi, w[:, 0], label="h_"+kernel)
-        plt.plot(xi, w[:, 1]/w[:, 0], label="u_"+kernel)
+        w = riemann_loop(kernel, wL, wR, xi)
+        if plot:
+            plt.plot(xi, w[:, 0], label="h_"+kernel)
+            plt.plot(xi, w[:, 1]/w[:, 0], label="u_"+kernel)
 
-    plt.xlabel(r'$\xi$')
-
-    if plot_file:
+    if plot:
         filename = "plotriem"
         xi_f, h_f, u_f = load_file(filename)
         plt.plot(xi_f, h_f, 'g+', label="h_"+filename)
         plt.plot(xi_f, u_f, 'k+', label="u_"+filename)
 
-    plt.legend()
-    plt.show()
+        plt.xlabel(r'$\xi$')
+        plt.legend()
+        plt.show()
 
 
 if __name__ == '__main__':
-    stvenant(plot_file=True)
+    parser = argparse.ArgumentParser(description="Solve 1D St-Venant problem")
+    parser.add_argument('--noplot', action='store_true',
+                        help="Do not plot solution")
+    args = parser.parse_args()
+    stvenant(not args.noplot)
