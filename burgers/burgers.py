@@ -59,7 +59,7 @@ def burgers(tmax, nmax, profile=False, plot=False, kernel='python'):
     wex = np.vectorize(godunov_python.sol_exact)(xm, tmax)
 
     error = L2_err(wn, wex)
-    print("L2 error = {}".format(error))
+    print("L2 error = {:f}".format(error))
 
     if plot:
         import matplotlib.pyplot as plt
