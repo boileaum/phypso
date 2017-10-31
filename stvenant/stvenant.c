@@ -16,7 +16,7 @@
 void riemann(double *wL, double *wR, double xi, double *w);
 
 
-int main(void){
+int main(int argc, char **argv){
 
   /* double hL=1; */
   /* double uL=1; */
@@ -28,23 +28,40 @@ int main(void){
   /* double hL=0.1737014163; */
   /* double uL=5.757005447; */
 
+
   double hL = 2;
   double uL = 0;
   double hR = 1;
   double uR = 0;
 
-
-  double wL[_M]={hL, hL * uL};
-  double wR[_M]={hR, hR * uR};
-
   int nx = 1000;
 
-  double xmin=-9;
-  double xmax=9;
+  double xmin = -9;
+  double xmax = 9;
+
+  double t = 1;
+
+  if (argc == 9){
+    hL = atof(argv[1]);
+    uL = atof(argv[2]);
+    hR = atof(argv[3]);
+    uR = atof(argv[4]);
+    nx = atoll(argv[5]);
+    xmin = atof(argv[6]);
+    xmax = atof(argv[7]);
+    t = atof(argv[8]);
+  }
+  else if (argc > 1){
+    fprintf(stderr, "Usage:\nstvenant.exe\n or\nstvenant.exe hL uL hR uR nx xmin xmax t\n");
+    exit(1);
+  }
+
+
+  double wL[_M] = {hL, hL * uL};
+  double wR[_M] = {hR, hR * uR};
 
   double dx = (xmax - xmin) / nx;
 
-  double t = 1;
 
   FILE *gnufile = NULL;
 
