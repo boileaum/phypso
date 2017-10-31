@@ -8,19 +8,20 @@ A set of very simple hyperbolic solvers using techniques to use efficient comput
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
+- [Installation](#installation)
+    - [Using docker](#using-docker)
+    - [Using pip](#using-pip)
 - [Saint-Venant's equation solver](#saint-venants-equation-solver)
-    - [Installation](#installation)
+    - [Installation](#installation-1)
     - [Usage](#usage)
 - [Burgers' equation solver](#burgers-equation-solver)
-    - [Installation](#installation-1)
     - [Basic usage](#basic-usage)
         - [Get help with:](#get-help-with)
         - [Examples:](#examples)
-    - [Use pythran to accelerate Python](#use-pythran-to-accelerate-python)
-        - [Installation on Mac](#installation-on-mac)
+    - [Use `pythran` to accelerate Python](#use-pythran-to-accelerate-python)
         - [Howto](#howto)
         - [Acceleration](#acceleration)
-    - [Use f2py to accelerate python](#use-f2py-to-accelerate-python)
+    - [Use `f2py` to accelerate python](#use-f2py-to-accelerate-python)
         - [Howto](#howto-1)
         - [Acceleration](#acceleration-1)
 - [Developers' corner](#developers-corner)
@@ -29,39 +30,21 @@ A set of very simple hyperbolic solvers using techniques to use efficient comput
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Saint-Venant's equation solver
 
-### Installation
+## Installation 
 
-Compile the C-executables, C-library, Cython and pythran versions
+### Using docker
 
-```
-cd stvenant
-make
-```
-
-### Usage
-
-Run using the python main program:
-
-```
-./stvenant.py
-```
-
-
-
-## Burgers' equation solver
-
-
-
-### Installation 
-
-To get an environment ready for running, [docker](https://www.docker.com/) is a solution.
-
-From the host:
+To get a full environment ready for running, [Docker](https://www.docker.com/) is a solution.
+From the host, clone the repository:
 
 ```
 [host] git clone https://git.unistra.fr/m.boileau/phypso.git
+```
+
+then run a docker container using the `boileaum/phypso-env` image:
+
+```
 [host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso-env
 ```
 
@@ -74,19 +57,55 @@ From the host:
 Now from the container:
 
 ```
-[container] cd phypso/burgers
+[container] cd phypso
 [container] make
 ```
 
-The `docker/Dockerfile-deps` file provides a full description of the required dependencies.
+### Using pip
+
+The `docker/Dockerfile-deps` file provides the first required dependencies such as `python3` and `gfortran`.
+
+Install the additional python libraries with `pip`:
+
+```
+pip install -r requirements.txt
+```
+
+> **Note:** pythran does not work currently on MacOS.
+
+
+## Saint-Venant's equation solver
+
+### Installation
+
+Compile the C-executable, C-library, Cython and pythran versions
+
+```
+cd stvenant
+make
+```
+
+### Usage
+
+Run using the python main program:
+
+```
+./stvenant.py [-h] [--noplot]
+```
+
+
+
+## Burgers' equation solver
+
 
 ### Basic usage
 
 #### Get help with:
 
 ```
+./burgers.py -h
 usage: burgers.py [-h] [--tmax final_time] [--nmax number_of_pts] [--profile]
-                  [--plot] [--kernel {python,pythran,numpy,fortran}]
+                  [--plot] [--kernel {pythran,numba,python,numpy,fortran}]
 
 Solve Burgers problem
 
@@ -96,7 +115,7 @@ optional arguments:
   --nmax number_of_pts  number of grid points
   --profile             activate profiling
   --plot                activate plotting
-  --kernel {python,pythran,numpy,fortran}
+  --kernel {pythran,numba,python,numpy,fortran}
                         select kernel type
 ```
 
@@ -114,20 +133,16 @@ $ ./burgers.py --nmax 1000 --profile
 $ ./burgers.py --nmax 1000 --profile --kernel numpy
 ```
 
-### Use pythran to accelerate Python
+### Use `pythran` to accelerate Python
 
 
-#### Installation on Mac
+From [Pythran website](http://pythran.readthedocs.io/en/latest/):
 
-- Install the [anaconda suite](https://www.anaconda.com/download/#macos)
-- Install pythran with pip
-
-```
-pip install pythran
-```
-
+> Pythran is a Python to c++ compiler for a subset of the Python language, with a focus on scientific computing. It takes a Python module annotated with a few interface description and turns it into a native python module with the same interface, but (hopefully) faster.
 
 #### Howto
+
+
 
 - Use pythran to compile the python submodule `godunov.py` to produce a `pythran_godunov.so` object file:
 
@@ -138,7 +153,7 @@ make pythran
 - Execute as if it where standard python
 
 ``` 
-./burgers.py 1.0 --nmax 1000 --profile
+./burgers.py --kernel pythran
 ```
 
 #### Acceleration
@@ -146,25 +161,26 @@ make pythran
 - Example of execution output using the pythran module:
 
 ```
-$ ./burgers.py --profile --nmax 1000
+$ ./burgers.py --nmax 1000 --profile --kernel pythran
 tmax = 1.0
 nmax = 1000
-Mean time [s] over 10 executions = 0.0023488752000048406
-L2 error = 0.036801482187378914
+kernel: pythran
+Mean time [s] over 10 executions = 0.002362
+L2 error = 0.018877
 ```
 
 - Example of execution output using the native python module:
 
 ```
-$ rm godunov.so 
-$ ./burgers.py --profile --nmax 1000
+$ ./burgers.py --nmax 1000 --profile --kernel python
 tmax = 1.0
 nmax = 1000
-Mean time [s] over 10 executions = 0.8791365289000168
-L2 error = 0.036801482187378914
+kernel: python
+Mean time [s] over 10 executions = 1.071154
+L2 error = 0.018877
 ```
 
-### Use f2py to accelerate python
+### Use `f2py` to accelerate python
 
 #### Howto
 
@@ -186,8 +202,9 @@ make fortran
 $ ./burgers.py --profile --nmax 1000 --kernel fortran
 tmax = 1.0
 nmax = 1000
-Mean time [s] over 10 executions = 0.007240815297700464
-L2 error = 0.036801482187378914
+kernel: fortran
+Mean time [s] over 10 executions = 0.004342
+L2 error = 0.018877
 ```
 
 ## Developers' corner
@@ -205,9 +222,6 @@ docker-compose build
 Tests are performed with [pytest](https://docs.pytest.org). To run the tests with verbose level and standard output:
 
 ```
-cd burgers
-pytest -vs
-cd ../stvenant
 pytest -vs
 ```
 
