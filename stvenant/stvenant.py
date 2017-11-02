@@ -124,9 +124,9 @@ def stvenant(plot=False):
     """main function that loops over x and plots the results"""
     C_program("./stvenant.exe")
 
-    if sys.platform == "darwin":
-        print("Skip pythran kernel because it does not work on Mac currently")
-        KERNELS.remove("pythran")
+#    if sys.platform == "darwin":
+#        print("Skip pythran kernel because it does not work on Mac currently")
+#        KERNELS.remove("pythran")
 
     for kernel in KERNELS:
         w = riemann_loop(kernel, wL, wR, xi)

@@ -71,8 +71,6 @@ Install the additional python libraries with `pip`:
 pip install -r requirements.txt
 ```
 
-> **Note:** pythran does not work currently on MacOS.
-
 
 ## Saint-Venant's equation solver
 
@@ -142,15 +140,28 @@ From [Pythran website](http://pythran.readthedocs.io/en/latest/):
 
 #### Howto
 
+Pythran simply requires to explicit the signatures of python functions as comments in python file header:
 
+```
+$ head  godunov.py 
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#pythran export sol_exact(float, float)
+#pythran export riemann(float, float, float)
+#pythran export timeloop(float, int)
+#pythran export xmin, xmax
+"""
+Godunov solver for the Burgers equation
+"""
+```
 
-- Use pythran to compile the python submodule `godunov.py` to produce a `pythran_godunov.so` object file:
+- Use pythran to compile the python submodule `godunov.py` as a `pythran_godunov.so` object file:
 
 ```
 make pythran
 ```
 
-- Execute as if it where standard python
+- Execute as if it were standard python
 
 ``` 
 ./burgers.py --kernel pythran
