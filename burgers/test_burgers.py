@@ -10,13 +10,7 @@ import itertools
 import sys
 
 
-cartesian_product = itertools.product([100, 1000], KERNELS)
-reason = "Skipped because pythran translation does not work on Mac currently"
-nmax_kernel_combinations = [couple if couple[1] != "pythran" else
-                            param(couple[0], couple[1],
-                                  marks=mark.skipif(sys.platform == "darwin",
-                                  reason=reason))
-                            for couple in cartesian_product]
+nmax_kernel_combinations = itertools.product([100, 1000], KERNELS)
 
 
 @mark.parametrize('nmax, kernel', nmax_kernel_combinations)

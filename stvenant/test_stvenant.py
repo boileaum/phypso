@@ -23,13 +23,7 @@ def test_xi(ref_data):
     assert_allclose(xi, xi_ref, atol=1e-15)
 
 
-reason = "Skipped because pythran translation does not work on Mac currently"
-kernels = [kernel if kernel != "pythran"
-           else param(kernel, marks=mark.skipif(sys.platform == "darwin",
-                      reason=reason)) for kernel in KERNELS]
-
-
-@mark.parametrize('kernel', kernels)
+@mark.parametrize('kernel', KERNELS)
 def test_loop(ref_data, kernel):
     """Test xi-loop riemann_loop for various implementations of the
     riemmann solver function"""
