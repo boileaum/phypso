@@ -1,4 +1,4 @@
-FROM boileaum/phypso-env:latest
+FROM boileaum/phypso:env
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
 
 COPY . $HOME/phypso

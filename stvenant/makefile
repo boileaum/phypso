@@ -1,4 +1,4 @@
-COPTS= -fPIC
+COPTS= -fPIC -std=c99
 #COPTS= -Wno-unused-result -Wsign-compare -Wunreachable-code -DNDEBUG -fwrapv -O2 -Wall -Wstrict-prototypes -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fstack-protector-strong -O2 -pipe
 
 .PHONY: clean
@@ -6,7 +6,7 @@ COPTS= -fPIC
 all: C libC Cython pythran
 
 C:
-	gcc stvenant.c -lm -o stvenant.exe
+	gcc $(COPTS) stvenant.c -lm -o stvenant.exe
 
 libC:
 	gcc $(COPTS) -c stvenant.c 

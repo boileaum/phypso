@@ -1,4 +1,4 @@
-FROM boileaum/phypso-deps:latest
+FROM boileaum/phypso:deps
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
 
 RUN apt-get update --fix-missing && \
