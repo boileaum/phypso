@@ -9,10 +9,10 @@ A set of very simple hyperbolic solvers using techniques to use efficient comput
 
 
 - [Installation](#installation)
+    - [Download the source repository](#download-the-source-repository)
     - [Using docker](#using-docker)
     - [Using pip](#using-pip)
 - [Saint-Venant's equation solver](#saint-venants-equation-solver)
-    - [Installation](#installation-1)
     - [Usage](#usage)
 - [Burgers' equation solver](#burgers-equation-solver)
     - [Basic usage](#basic-usage)
@@ -33,6 +33,16 @@ A set of very simple hyperbolic solvers using techniques to use efficient comput
 
 ## Installation 
 
+### Download the source repository
+
+Either use git:
+
+```
+git clone https://git.unistra.fr/m.boileau/phypso.git
+```
+
+or download zip file using [this link](https://git.unistra.fr/m.boileau/phypso/repository/master/archive.zip).
+
 ### Using docker
 
 To get a full environment ready for running, [Docker](https://www.docker.com/) is a solution.
@@ -42,10 +52,10 @@ From the host, clone the repository:
 [host] git clone https://git.unistra.fr/m.boileau/phypso.git
 ```
 
-then run a docker container using the `boileaum/phypso-env` image:
+then run a docker container using the `boileaum/phypso:env` image:
 
 ```
-[host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso-env
+[host] docker run -ti -v $(pwd):/home/euler/phypso boileaum/phypso:env
 ```
 
 > **Note:** to run docker from a Mac with support for matplotlib display, simply run:
@@ -71,17 +81,14 @@ Install the additional python libraries with `pip`:
 pip install -r requirements.txt
 ```
 
-
-## Saint-Venant's equation solver
-
-### Installation
-
-Compile the C-executable, C-library, Cython and pythran versions
+From the project root directory, compile the C-executable, C-library, Cython and pythran versions of all programs using:
 
 ```
-cd stvenant
 make
 ```
+
+
+## Saint-Venant's equation solver
 
 ### Usage
 
