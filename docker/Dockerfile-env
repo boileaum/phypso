@@ -10,6 +10,7 @@ rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN useradd -m -s /bin/bash  euler
 ENV HOME /home/euler
+RUN chown -R euler:euler /home/euler
 USER euler
 WORKDIR $HOME
 
