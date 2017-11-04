@@ -1,24 +1,11 @@
-FROM ubuntu:latest
-
+FROM python:3
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
 
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 RUN apt-get update --fix-missing && \
-    apt-get install -y \ 
-    sudo \
-    vim \
-    git \
-    gfortran \
-    python3-pip \
-    python3-tk
+    apt-get install -y gfortran
 
 RUN apt-get clean && \
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-COPY requirements.txt .
-RUN pip3 install --upgrade pip && \
-    pip3 install -r requirements.txt && \
-    rm -rf ~/.cache/pip/
-
-CMD /bin/bash

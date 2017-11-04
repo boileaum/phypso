@@ -5,13 +5,13 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile-deps
-    image: boileaum/phypso-deps:latest
+    image: boileaum/phypso:deps
 
   env:
     build:
       context: .
       dockerfile: Dockerfile-env
-    image: boileaum/phypso-env:latest
+    image: boileaum/phypso:env
     depends_on:
       - deps
 
