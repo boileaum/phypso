@@ -1,11 +1,12 @@
 FROM boileaum/phypso:env
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
 
-COPY . $HOME/phypso
+ENV HOME /home/euler
+ADD . $HOME/phypso
 USER root
 RUN chown -R euler:euler /home/euler
-USER euler
 WORKDIR $HOME/phypso
+USER euler
 
 RUN make clean && make
 
