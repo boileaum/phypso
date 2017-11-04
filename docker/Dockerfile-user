@@ -2,10 +2,12 @@ FROM boileaum/phypso:env
 MAINTAINER Matthieu Boileau <matthieu.boileau@math.unistra.fr>
 
 COPY . $HOME/phypso
-RUN sudo chown -R euler:euler $HOME
-
+USER root
+RUN chown -R euler:euler /home/euler
+USER euler
 WORKDIR $HOME/phypso
-RUN make
+
+RUN make clean && make
 
 CMD /bin/bash
 
