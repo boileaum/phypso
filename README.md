@@ -41,7 +41,7 @@ Either use git:
 git clone https://git.unistra.fr/m.boileau/phypso.git
 ```
 
-or download zip file using [this link](https://git.unistra.fr/m.boileau/phypso/repository/master/archive.zip).
+or download [zip file](https://git.unistra.fr/m.boileau/phypso/repository/master/archive.zip).
 
 ### Using docker
 
