@@ -14,7 +14,7 @@ class Hyperbolic():
         """Return the solution of the Riemann problem at xi"""
         pass
 
-    def vmax(self):
+    def vmax(self, wn):
         pass
 
     def numflux(self):
@@ -27,8 +27,7 @@ class Hyperbolic():
         dx = xm[1] - xm[0]
         t = 0.
         while t < tmax:
-            vmax = max(abs(wn))
-            dt = cfl*dx/vmax
+            dt = cfl*dx/self.vmax(wn)
 
             flux = self.numflux(wn[:-1], wn[1:])
             wn[1:-1] -= dt/dx*(flux[1:] - flux[:-1])
