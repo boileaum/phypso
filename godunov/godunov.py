@@ -12,7 +12,8 @@ import numpy as np
 import timeit
 
 PROBLEMS = set(('burgers', 'stvenant'))
-KERNELS = set(('python', 'pythran', 'numpy', 'numba', 'fortran'))
+#KERNELS = set(('python', 'pythran', 'numpy', 'numba', 'fortran'))
+KERNELS = set(('python', 'numpy'))
 CFL = 0.8
 XMIN = -1.
 XMAX = 2.
