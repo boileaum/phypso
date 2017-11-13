@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument('--tmax', type=float, metavar="final_time", default=1.,
                         help="simulation final time")
     parser.add_argument('--nmax', type=int, metavar="number_of_pts",
-                        default=400, help="number of grid points")
+                        default=100, help="number of grid points")
     parser.add_argument('--profile', action='store_true',
                         help="activate profiling")
     parser.add_argument('--plot', action='store_true',
