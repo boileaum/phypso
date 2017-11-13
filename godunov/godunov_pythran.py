@@ -9,6 +9,7 @@ from godunov_python import Burgers as Burgers_python
 
 class Burgers(Burgers_python):
 
-    def __init__(self):
+    def __init__(self, nmax, tmax):
+        super().__init__(nmax, tmax)
         from riemann_pythran import numflux
         self.numflux = numflux

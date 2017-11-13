@@ -21,23 +21,52 @@ class Hyperbolic():
         """Return numerical flux using Riemann solver"""
         pass
 
-    def timeloop(self, tmax, nmax, xm, wn, cfl):
+    def timeloop(self):
         """Iterate overt time to return the solution at t = tmax"""
 
-        dx = xm[1] - xm[0]
         t = 0.
-        while t < tmax:
-            dt = cfl*dx/self.vmax(wn)
+        while t < self.tmax:
+            dt = self.cfl*self.dx/self.vmax()
 
-            flux = self.numflux(wn[:-1], wn[1:])
-            wn[1:-1] -= dt/dx*(flux[1:] - flux[:-1])
+            flux = self.numflux(self.wn[:-1], self.wn[1:])
+            self.wn[1:-1] -= dt/self.dx*(flux[1:] - flux[:-1])
 
             t += dt
 
-        return wn
+        return self.wn
 
 
 class Burgers(Hyperbolic):
+
+    def __init__(self, nmax, tmax):
+
+        self.nmax = nmax
+        self.tmax = tmax
+        self.xm = np.zeros(self.nmax+2)
+        self.wn = np.zeros(self.nmax+2)
+
+        self.cfl = 0.8
+        self.xmin = -1.
+        self.xmax = 2.
+
+        def sol_exact(x, t):
+            """return the exact solution at (x, t) of Burger's equation"""
+            if t <= 1.:
+                if x <= t: w = 1.
+                elif x >= 1.: w = 0.
+                elif (x > t) and (x <= 1.):
+                    w = (1. - x)/(1. - t)
+            else:
+                w = 1. if (x - 1.) <= 0.5*(t - 1.) else 0.
+            return w
+
+        self.sol_exact = sol_exact
+
+        # Initialize with analytical solution
+        self.dx = float(self.xmax - self.xmin)/self.nmax
+        self.xm = np.linspace(self.xmin - 0.5*self.dx, self.xmax + 0.5*self.dx,
+                              num=self.nmax+2)
+        self.wn = np.array([self.sol_exact(x, 0.) for x in self.xm])
 
     def riemann(self, wL, wR, xi):
         """Return the solution of the Riemann problem at xi"""
@@ -51,8 +80,8 @@ class Burgers(Hyperbolic):
             if (xi > wL) and (xi < wR): w = xi
         return w
 
-    def vmax(self, wn):
-        return max(abs(wn))
+    def vmax(self):
+        return max(abs(self.wn))
 
     def numflux(self, wL, wR):
         """Return numerical flux using Riemann solver"""
@@ -63,3 +92,6 @@ class Burgers(Hyperbolic):
             w = self.riemann(wL[i], wR[i], 0.)
             flux[i] = w*w/2.
         return flux
+
+    def compute_sol_exact(self):
+        return np.vectorize(self.sol_exact)(self.xm, self.tmax)
