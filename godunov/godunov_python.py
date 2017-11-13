@@ -5,10 +5,26 @@ Godunov solver
 """
 
 import numpy as np
+from riemann_stvenant import riemann as riemann_stvenant
 
 
 class Hyperbolic():
     """A generic class to define a hyperbolic solver"""
+
+    def __init__(self, nmax, tmax):
+
+        self.nmax = nmax
+        self.tmax = tmax
+
+        # Initialize with analytical solution
+        self.dx = float(self.xmax - self.xmin)/self.nmax
+        self.xm = np.linspace(self.xmin - 0.5*self.dx, self.xmax + 0.5*self.dx,
+                              num=self.nmax+2)
+        self.init_sol()
+        self.flux = np.zeros(self.nmax+1)
+
+    def init_sol(self):
+        pass
 
     def riemann(self):
         """Return the solution of the Riemann problem at xi"""
@@ -17,9 +33,19 @@ class Hyperbolic():
     def vmax(self, wn):
         pass
 
-    def numflux(self):
-        """Return numerical flux using Riemann solver"""
+    def phys_flux(self, w):
         pass
+
+    def numflux(self, wL, wR):
+        """Return numerical flux using Riemann solver"""
+
+        for i in range(self.nmax+1):
+            w = self.riemann(wL[i], wR[i], 0.)
+            self.flux[i] = self.phys_flux(w)
+        return self.flux
+
+    def compute_sol_exact(self, t):
+        return np.array([self.sol_exact(xm, t) for xm in self.xm])
 
     def timeloop(self):
         """Iterate overt time to return the solution at t = tmax"""
@@ -28,10 +54,11 @@ class Hyperbolic():
         while t < self.tmax:
             dt = self.cfl*self.dx/self.vmax()
 
-            flux = self.numflux(self.wn[:-1], self.wn[1:])
-            self.wn[1:-1] -= dt/self.dx*(flux[1:] - flux[:-1])
+            self.flux = self.numflux(self.wn[:-1], self.wn[1:])
+            self.wn[1:-1] -= dt/self.dx*(self.flux[1:] - self.flux[:-1])
 
             t += dt
+            # print("mass = ", np.sum(self.wn[1:-1, 0]*self.dx))
 
         return self.wn
 
@@ -53,20 +80,7 @@ class Burgers(Hyperbolic):
             w = 1. if (x - 1.) <= 0.5*(t - 1.) else 0.
         return w
 
-    def init_arrays(self):
-        self.xm = np.zeros(self.nmax+2)
-        self.wn = np.zeros(self.nmax+2)
-
-    def __init__(self, nmax, tmax):
-
-        self.nmax = nmax
-        self.tmax = tmax
-        self.init_arrays()
-
-        # Initialize with analytical solution
-        self.dx = float(self.xmax - self.xmin)/self.nmax
-        self.xm = np.linspace(self.xmin - 0.5*self.dx, self.xmax + 0.5*self.dx,
-                              num=self.nmax+2)
+    def init_sol(self):
         self.wn = np.array([self.sol_exact(x, 0.) for x in self.xm])
 
     def riemann(self, wL, wR, xi):
@@ -84,17 +98,49 @@ class Burgers(Hyperbolic):
     def vmax(self):
         return max(abs(self.wn))
 
-    def numflux(self, wL, wR):
-        """Return numerical flux using Riemann solver"""
-
-        nmax = len(wL) - 1
-        flux = np.zeros(nmax+1)
-        for i in range(nmax+1):
-            w = self.riemann(wL[i], wR[i], 0.)
-            flux[i] = w*w/2.
-        return flux
-
-    def compute_sol_exact(self):
-        return np.vectorize(self.sol_exact)(self.xm, self.tmax)
+    def phys_flux(self, w):
+        return w**2/2.
 
 
+class StVenant(Burgers):
+
+    g = 9.81
+    cfl = 0.8
+    xmin = -10.
+    xmax = 10.
+    hL, uL = 2., 0.
+    hR, uR = 1., 0.
+    wL = np.array([hL, hL*uL])
+    wR = np.array([hR, hR*uR])
+
+    def sol_exact(self, x, t):
+        """return the exact solution at (x, t) of Burger's equation"""
+        t += 1.e-10
+        xi = x/t
+        w = riemann_stvenant(self.wL, self.wR, xi)
+        return w
+
+    def init_sol(self):
+        self.wn = np.array([self.sol_exact(x, 0.) for x in self.xm])
+
+    def __init__(self, nmax, tmax):
+
+        super().__init__(nmax, tmax)
+        self.flux = np.zeros((self.nmax+1, 2))
+
+    def riemann(self, wL, wR, xi):
+        """Return the solution of the Riemann problem at xi"""
+        return riemann_stvenant(wL, wR, xi)
+
+    def vel(self, w):
+        h = w[0]
+        u = w[1]/h
+        return np.sqrt(self.g*h) + np.abs(u)
+
+    def vmax(self):
+        return np.max([self.vel(self.wn[i, :]) for i in range(self.nmax)])
+
+    def phys_flux(self, w):
+        h = w[0]
+        u = w[1]/h
+        return np.array([h*u, h*u**2 + self.g*h**2/2.])

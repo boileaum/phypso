@@ -15,7 +15,7 @@ KERNELS = set(('python', 'numpy', 'pythran'))
 
 
 def L2_err(sol, ref, norm=1.0):
-    """return normalized infinite-norm error between sol and ref"""
+    """return normalized infinity norm error between sol and ref"""
     N = len(sol)
     return np.linalg.norm(sol - ref, ord=2)/np.sqrt(N)/norm
 
@@ -36,7 +36,7 @@ class Problem():
         if self.problem == 'burgers':
             self.solver = godunov_module.Burgers(self.nmax, self.tmax)
         elif self.problem == 'stvenant':
-            #self.solver = godunov_module.StVenant(self.nmax, self.tmax)
+            self.solver = godunov_module.StVenant(self.nmax, self.tmax)
             pass
         else:
             exit("Unknow problem:", self.problem)
@@ -60,7 +60,7 @@ class Problem():
                                                           self.exec_time))
 
     def compute_sol_exact(self):
-        self.wexact = self.solver.compute_sol_exact()
+        self.wexact = self.solver.compute_sol_exact(self.tmax)
 
     def compute_error(self):
         self.error = L2_err(self.wn, self.wexact)
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument('--tmax', type=float, metavar="final_time", default=1.,
                         help="simulation final time")
     parser.add_argument('--nmax', type=int, metavar="number_of_pts",
-                        default=100, help="number of grid points")
+                        default=400, help="number of grid points")
     parser.add_argument('--profile', action='store_true',
                         help="activate profiling")
     parser.add_argument('--plot', action='store_true',
