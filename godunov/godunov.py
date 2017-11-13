@@ -14,16 +14,22 @@ PROBLEMS = set(('burgers', 'stvenant'))
 KERNELS = set(('python', 'numpy', 'pythran'))
 
 
-def burgers_exact(x, t):
-    """return the exact solution at (x, t) of Burger's equation"""
-    if t <= 1.:
-        if x <= t: w = 1.
-        elif x >= 1.: w = 0.
-        elif (x > t) and (x <= 1.):
-            w = (1. - x)/(1. - t)
-    else:
-        w = 1. if (x - 1.) <= 0.5*(t - 1.) else 0.
-    return w
+class Burgers():
+
+    cfl = 0.8
+    xmin = -1.
+    xmax = 2.
+
+    def sol_exact(x, t):
+        """return the exact solution at (x, t) of Burger's equation"""
+        if t <= 1.:
+            if x <= t: w = 1.
+            elif x >= 1.: w = 0.
+            elif (x > t) and (x <= 1.):
+                w = (1. - x)/(1. - t)
+        else:
+            w = 1. if (x - 1.) <= 0.5*(t - 1.) else 0.
+        return w
 
 
 def L2_err(sol, ref, norm=1.0):
@@ -58,10 +64,10 @@ class Problem():
         module_name = "godunov_" + self.kernel
         godunov_module = import_module(module_name)
         if self.problem == 'burgers':
-            self.cfl = 0.8
-            self.xmin = -1.
-            self.xmax = 2.
-            self.sol_exact = burgers_exact
+            self.cfl = Burgers.cfl
+            self.xmin = Burgers.xmin
+            self.xmax = Burgers.xmax
+            self.sol_exact = Burgers.sol_exact
             self.solver = godunov_module.Burgers()
         elif self.problem == 'stvenant':
             pass
