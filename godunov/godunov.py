@@ -36,6 +36,7 @@ class Problem():
         if self.problem == 'burgers':
             self.solver = godunov_module.Burgers(self.nmax, self.tmax)
         elif self.problem == 'stvenant':
+            #self.solver = godunov_module.StVenant(self.nmax, self.tmax)
             pass
         else:
             exit("Unknow problem:", self.problem)
@@ -45,8 +46,8 @@ class Problem():
     def __repr__(self):
 
         return "problem: {}\n".format(self.problem) + \
-               "tmax = {}\n".format(self.problem) + \
-               "nmax = {}\n".format(self.problem) + \
+               "tmax = {}\n".format(self.tmax) + \
+               "nmax = {}\n".format(self.nmax) + \
                "kernel: {}".format(self.kernel)
 
     def compute_sol_num(self):
