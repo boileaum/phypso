@@ -5,7 +5,6 @@ Solve Burgers' equation using the 1rst-order Godunov method
 """
 
 import argparse
-import godunov as godunov_python
 from importlib import import_module
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,10 +12,7 @@ import timeit
 
 PROBLEMS = set(('burgers', 'stvenant'))
 #KERNELS = set(('python', 'pythran', 'numpy', 'numba', 'fortran'))
-KERNELS = set(('python', 'numpy'))
-CFL = 0.8
-XMIN = -1.
-XMAX = 2.
+KERNELS = set(('python', 'numpy', 'pythran'))
 
 
 def burgers_exact(x, t):
@@ -60,12 +56,12 @@ class Problem():
             self.xm = np.zeros(self.nmax+2)
             self.wn = np.zeros(self.nmax+2)
 
-        self.dx = float(XMAX - XMIN)/self.nmax
-        self.cfl = CFL
-
         module_name = "godunov_" + self.kernel
         godunov_module = import_module(module_name)
         if self.problem == 'burgers':
+            self.cfl = 0.8
+            self.xmin = -1.
+            self.xmax = 2.
             self.sol_exact = burgers_exact
             self.solver = godunov_module.Burgers()
         elif self.problem == 'stvenant':
@@ -74,7 +70,8 @@ class Problem():
             exit("Unknow problem:", self.problem)
 
         # Initialize with analytical solution
-        self.xm = np.linspace(XMIN - 0.5*self.dx, XMAX + 0.5*self.dx,
+        self.dx = float(self.xmax - self.xmin)/self.nmax
+        self.xm = np.linspace(self.xmin - 0.5*self.dx, self.xmax + 0.5*self.dx,
                               num=self.nmax+2)
         self.wn = np.array([self.sol_exact(x, 0.) for x in self.xm])
 
