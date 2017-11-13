@@ -8,10 +8,9 @@ import argparse
 from importlib import import_module
 import matplotlib.pyplot as plt
 import numpy as np
-import timeit
+from timeit import default_timer
 
 PROBLEMS = set(('burgers', 'stvenant'))
-#KERNELS = set(('python', 'pythran', 'numpy', 'numba', 'fortran'))
 KERNELS = set(('python', 'numpy', 'pythran'))
 
 
@@ -76,9 +75,14 @@ class Problem():
         self.wn = np.array([self.sol_exact(x, 0.) for x in self.xm])
 
     def compute_sol_num(self):
+
+        start_time = default_timer()  # Start timer
         self.wn = self.solver.timeloop(self.tmax, self.nmax,
                                        self.xm, self.wn, self.cfl)
-#        self.exec_time = time
+        self.exec_time = default_timer() - start_time
+        print("Time to solve {} with {} [s]: {:f}".format(self.problem,
+                                                          self.kernel,
+                                                          self.exec_time))
 
     def compute_sol_exact(self):
         self.wexact = np.vectorize(self.sol_exact)(self.xm, self.tmax)
