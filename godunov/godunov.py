@@ -112,11 +112,11 @@ if __name__ == '__main__':
                         default='python', help="select kernel type")
     args = parser.parse_args()
 
-    p1 = Problem(**vars(args))
-    p1.solve()
+    p = Problem(**vars(args))
+    p.solve()
 
     if args.plot:
-        plt.plot(p1.xm[1:-1], p1.wexact[1:-1], 'r+', label='exact')
-        plt.plot(p1.xm[1:-1], p1.wn[1:-1], 'k-', label=p1.kernel)
+        plt.plot(p.xm[1:-1], p.wexact[1:-1], 'r+', label='exact')
+        plt.plot(p.xm[1:-1], p.wn[1:-1], 'k-', label=p.kernel)
         plt.legend()
         plt.show()
