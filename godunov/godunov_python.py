@@ -5,7 +5,9 @@ Godunov solver
 """
 
 import numpy as np
+from riemann_burgers import riemann as riemann_burgers
 from riemann_stvenant import riemann as riemann_stvenant
+from riemann_stvenant import g
 
 
 class Hyperbolic():
@@ -21,10 +23,12 @@ class Hyperbolic():
         self.xm = np.linspace(self.xmin - 0.5*self.dx, self.xmax + 0.5*self.dx,
                               num=self.nmax+2)
         self.init_sol()
-        self.flux = np.zeros(self.nmax+1)
+
+    def sol_exact(self, x, t):
+        pass
 
     def init_sol(self):
-        pass
+        self.wn = np.array([self.sol_exact(x, 0.) for x in self.xm])
 
     def riemann(self):
         """Return the solution of the Riemann problem at xi"""
@@ -69,6 +73,12 @@ class Burgers(Hyperbolic):
     xmin = -1.
     xmax = 2.
 
+    def __init__(self, nmax, tmax):
+
+        self.riemann = riemann_burgers
+        super().__init__(nmax, tmax)
+        self.flux = np.zeros(self.nmax+1)
+
     def sol_exact(self, x, t):
         """return the exact solution at (x, t) of Burger's equation"""
         if t <= 1.:
@@ -80,21 +90,6 @@ class Burgers(Hyperbolic):
             w = 1. if (x - 1.) <= 0.5*(t - 1.) else 0.
         return w
 
-    def init_sol(self):
-        self.wn = np.array([self.sol_exact(x, 0.) for x in self.xm])
-
-    def riemann(self, wL, wR, xi):
-        """Return the solution of the Riemann problem at xi"""
-        if wL > wR:
-            sigma = 0.5*(wL + wR)
-            if xi < sigma: w = wL
-            if xi >= sigma: w = wR
-        else:
-            if xi <= wL: w = wL
-            if xi >= wR: w = wR
-            if (xi > wL) and (xi < wR): w = xi
-        return w
-
     def vmax(self):
         return max(abs(self.wn))
 
@@ -102,9 +97,8 @@ class Burgers(Hyperbolic):
         return w**2/2.
 
 
-class StVenant(Burgers):
+class StVenant(Hyperbolic):
 
-    g = 9.81
     cfl = 0.8
     xmin = -10.
     xmax = 10.
@@ -113,29 +107,23 @@ class StVenant(Burgers):
     wL = np.array([hL, hL*uL])
     wR = np.array([hR, hR*uR])
 
+    def __init__(self, nmax, tmax):
+
+        self.riemann = riemann_stvenant
+        super().__init__(nmax, tmax)
+        self.flux = np.zeros((self.nmax+1, 2))
+
     def sol_exact(self, x, t):
         """return the exact solution at (x, t) of Burger's equation"""
         t += 1.e-10
         xi = x/t
-        w = riemann_stvenant(self.wL, self.wR, xi)
+        w = self.riemann(self.wL, self.wR, xi)
         return w
-
-    def init_sol(self):
-        self.wn = np.array([self.sol_exact(x, 0.) for x in self.xm])
-
-    def __init__(self, nmax, tmax):
-
-        super().__init__(nmax, tmax)
-        self.flux = np.zeros((self.nmax+1, 2))
-
-    def riemann(self, wL, wR, xi):
-        """Return the solution of the Riemann problem at xi"""
-        return riemann_stvenant(wL, wR, xi)
 
     def vel(self, w):
         h = w[0]
         u = w[1]/h
-        return np.sqrt(self.g*h) + np.abs(u)
+        return np.sqrt(g*h) + np.abs(u)
 
     def vmax(self):
         return np.max([self.vel(self.wn[i, :]) for i in range(self.nmax)])
@@ -143,4 +131,4 @@ class StVenant(Burgers):
     def phys_flux(self, w):
         h = w[0]
         u = w[1]/h
-        return np.array([h*u, h*u**2 + self.g*h**2/2.])
+        return np.array([h*u, h*u**2 + g*h**2/2.])

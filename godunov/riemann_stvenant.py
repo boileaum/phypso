@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#pythran export riemann(float[:], float[:], float)
+#pythran export g
 #pythran export Z(float, float)
+#pythran export riemann(float[], float[], float)
+
 """
-A python version of St-Venant Riemann solver
+Riemann solver
 """
 
 from math import sqrt
 import numpy as np
 
 g = 9.81
+nmax = 100
 
 
 def Z(h1, h2):

@@ -10,6 +10,11 @@ from godunov_python import Burgers as Burgers_python
 class Burgers(Burgers_python):
     """A set of methods to solve Burgers' problem using a numpy kernel"""
 
+    def __init__(self, nmax, tmax):
+
+        super().__init__(nmax, tmax)
+        del(self.riemann)  # Unbound self.riemann to old definition
+
     def riemann(self, wL, wR, xi):
         """Exact Riemann solver for Burgers' equation"""
         sigma = (wL + wR)/2.

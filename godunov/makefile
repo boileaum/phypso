@@ -13,7 +13,8 @@ fortran:
 	$(F2PY) $(F2PYFLAGS) -m godunov_fortran -c godunov.f90
 
 pythran:
-	pythran riemann_pythran.py
+	pythran riemann_burgers.py -o riemann_burgers_pythran.so
+	pythran riemann_stvenant.py -o riemann_stvenant_pythran.so
 
 clean:
 	rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__
