@@ -4,12 +4,12 @@
 Check that numerical error of the Godunov solver with various kernel versions
 """
 
-from godunov import Problem, KERNELS
+from godunov import Problem, PROBLEMS
 from pytest import mark, approx
 import itertools
 
 
-nmax_kernel_combinations = itertools.product([100, 1000], KERNELS)
+nmax_kernel_combinations = itertools.product([100, 1000], PROBLEMS['burgers'])
 
 
 @mark.parametrize('nmax, kernel', nmax_kernel_combinations)
@@ -24,8 +24,7 @@ def test_burgers(nmax, kernel):
     assert problem.error == approx(err_ref[nmax])
 
 
-KERNELS.remove("numpy")
-nmax_kernel_combinations = itertools.product([100, 500], KERNELS)
+nmax_kernel_combinations = itertools.product([100, 500], PROBLEMS['stvenant'])
 
 
 @mark.parametrize('nmax, kernel', nmax_kernel_combinations)

@@ -10,8 +10,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from timeit import default_timer
 
-PROBLEMS = set(('burgers', 'stvenant'))
-KERNELS = set(('python', 'numpy', 'pythran'))
+all_KERNELS = set(('python', 'numpy', 'pythran'))
+PROBLEMS = {'burgers': all_KERNELS,
+            'stvenant': set(('python', 'pythran'))}
 
 
 def L2_err(sol, ref, norm=1.0):
@@ -84,9 +85,14 @@ if __name__ == '__main__':
                         help="activate profiling")
     parser.add_argument('--plot', action='store_true',
                         help="activate plotting")
-    parser.add_argument('--kernel', choices=KERNELS,
+    parser.add_argument('--kernel', choices=all_KERNELS,
                         default='python', help="select kernel type")
     args = parser.parse_args()
+
+    if args.kernel not in PROBLEMS[args.problem]:
+        msg = "{} kernel not implemented for {} problem.".format(args.kernel,
+                                                                 args.problem)
+        exit(msg)
 
     p = Problem(**vars(args))
     print(p)
