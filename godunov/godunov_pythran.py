@@ -6,7 +6,6 @@ Godunov solver
 
 from godunov_python import Burgers as Burgers_python
 from godunov_python import StVenant as StVenant_python
-import numpy as np
 
 
 class Burgers(Burgers_python):
