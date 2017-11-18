@@ -6,7 +6,7 @@ Godunov solver for the Burgers equation using numpy
 support numpy slicing)
 """
 
-from godunov import xmin, xmax, sol_exact
+from godunov_burgers import xmin, xmax, sol_exact
 import numpy as np
 
 
