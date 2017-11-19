@@ -8,7 +8,6 @@ import numpy as np
 from burgers.riemann import riemann as riemann_burgers
 from stvenant.riemann import riemann as riemann_stvenant
 from stvenant.riemann import g
-import matplotlib.pyplot as plt
 
 
 class Hyperbolic():
@@ -21,6 +20,7 @@ class Hyperbolic():
         self.tmax = self.problem.tmax
         self.plot = self.problem.plot
         if self.plot:
+            import matplotlib.pyplot as plt
             plt.ion()
 
         # Initialize with analytical solution
