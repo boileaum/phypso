@@ -60,9 +60,10 @@ class Hyperbolic():
     def timeloop(self):
         """Iterate overt time to return the solution at t = tmax"""
 
-        self.fig = plt.figure()
-        self.ax = self.fig.add_subplot(111)
-        self.problem.plot_wn(self.ax, self.wn)
+        if self.plot:
+            self.fig = plt.figure()
+            self.ax = self.fig.add_subplot(111)
+            self.problem.plot_wn(self.ax, self.wn)
 
         t = 0.
         while t < self.tmax:
