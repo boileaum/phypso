@@ -8,6 +8,7 @@ import numpy as np
 from burgers.riemann import riemann as riemann_burgers
 from stvenant.riemann import riemann as riemann_stvenant
 from stvenant.riemann import g
+import matplotlib.pyplot as plt
 
 
 class Hyperbolic():
@@ -19,12 +20,15 @@ class Hyperbolic():
         self.nmax = self.problem.nmax
         self.tmax = self.problem.tmax
         self.plot = self.problem.plot
+        if self.plot:
+            plt.ion()
 
         # Initialize with analytical solution
         self.dx = float(self.xmax - self.xmin)/self.nmax
         self.xm = np.linspace(self.xmin - 0.5*self.dx, self.xmax + 0.5*self.dx,
                               num=self.nmax+2)
         self.init_sol()
+        self.init_mass = self.problem.get_mass(self.wn, self.dx)
 
     def sol_exact(self, x, t):
         pass
@@ -56,18 +60,28 @@ class Hyperbolic():
     def timeloop(self):
         """Iterate overt time to return the solution at t = tmax"""
 
+        self.fig = plt.figure()
+        self.ax = self.fig.add_subplot(111)
+        self.problem.plot_wn(self.ax, self.wn)
+
         t = 0.
         while t < self.tmax:
+            self.problem.BC(self.wn)
             dt = self.cfl*self.dx/self.vmax()
 
             self.flux = self.numflux(self.wn[:-1], self.wn[1:])
             self.wn[1:-1] -= dt/self.dx*(self.flux[1:] - self.flux[:-1])
 
             t += dt
-#            if self.plot:
-#                self.plot_num()
-            # print("mass = ", np.sum(self.wn[1:-1, 0]*self.dx))
+            if self.plot:
+                self.problem.plot_update(self.ax, self.wn)
+                plt.show()
+                plt.pause(0.001)
+            self.mass = self.problem.get_mass(self.wn, self.dx)
+            # print("Total mass =", self.mass)
 
+        if self.plot:
+            plt.ioff()
         return self.wn
 
 
