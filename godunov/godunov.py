@@ -11,8 +11,7 @@ import numpy as np
 from timeit import default_timer
 
 all_KERNELS = 'python', 'numpy', 'pythran'
-PROBLEMS = {'burgers': all_KERNELS,
-            'stvenant': set(('python', 'pythran'))}
+PROBLEMS = 'burgers', 'stvenant'
 
 
 def L2_err(sol, ref, norm=1.0):
@@ -21,11 +20,13 @@ def L2_err(sol, ref, norm=1.0):
     return np.linalg.norm(sol - ref, ord=2)/np.sqrt(N)/norm
 
 
-class Problem():
+class Burgers():
+
+    problem = "burgers"
+    kernels = all_KERNELS
 
     def __init__(self, **kwargs):
 
-        self.problem = kwargs.get('problem', 'burgers')
         self.tmax = kwargs.get('tmax', 1.0)
         self.nmax = kwargs.get('nmax', 100)
         self.plot = kwargs.get('plot', False)
@@ -33,15 +34,8 @@ class Problem():
         self.kernel = kwargs.get('kernel', 'python')
 
         module_name = "godunov_" + self.kernel
-        godunov_module = import_module(module_name)
-        if self.problem == 'burgers':
-            self.solver = godunov_module.Burgers(self.nmax, self.tmax)
-        elif self.problem == 'stvenant':
-            self.solver = godunov_module.StVenant(self.nmax, self.tmax)
-            pass
-        else:
-            exit("Unknow problem:", self.problem)
-
+        self.godunov_module = import_module(module_name)
+        self.solver = self.godunov_module.Burgers(self.nmax, self.tmax)
         self.xm = self.solver.xm
 
     def __repr__(self):
@@ -74,23 +68,37 @@ class Problem():
 
     def plot_exact(self, ax):
         x = self.xm[1:-1]
-        if self.problem == "burgers":
-            ax.plot(x, self.wexact[1:-1], 'r+', label='exact')
-        else:
-            h = self.wn[1:-1, 0]
-            u = self.wn[1:-1, 1]/h
-            ax.plot(x, h, '+', label='h_exact')
-            ax.plot(x, u, '+', label='u_exact')
+        ax.plot(x, self.wexact[1:-1], 'r+', label='exact')
 
     def plot_num(self, ax):
         x = self.xm[1:-1]
-        if self.problem == "burgers":
-            ax.plot(x, self.wn[1:-1], '-', label=self.kernel)
-        else:
-            h = self.wn[1:-1, 0]
-            u = self.wn[1:-1, 1]/h
-            ax.plot(x, h, label='h_'+p.kernel)
-            ax.plot(x, u, label='u_'+p.kernel)
+        ax.plot(x, self.wn[1:-1], label=p.kernel)
+
+
+class StVenant(Burgers):
+
+    problem = "stvenant"
+    kernels = 'python', 'pythran'
+
+    def __init__(self, **kwargs):
+
+        super().__init__(**kwargs)
+        self.solver = self.godunov_module.StVenant(self.nmax, self.tmax)
+        self.xm = self.solver.xm
+
+    def plot_exact(self, ax):
+        x = self.xm[1:-1]
+        h = self.wn[1:-1, 0]
+        u = self.wn[1:-1, 1]/h
+        ax.plot(x, h, '+', label='h_exact')
+        ax.plot(x, u, '+', label='u_exact')
+
+    def plot_num(self, ax):
+        x = self.xm[1:-1]
+        h = self.wn[1:-1, 0]
+        u = self.wn[1:-1, 1]/h
+        ax.plot(x, h, label='h_'+p.kernel)
+        ax.plot(x, u, label='u_'+p.kernel)
 
 
 def plot(*problems):
@@ -124,17 +132,25 @@ if __name__ == '__main__':
                         default='python', help="select kernel type")
     args = parser.parse_args()
 
+    if args.problem == 'burgers':
+        Problem = Burgers
+
+    elif args.problem == 'stvenant':
+        Problem = StVenant
+    else:
+        exit("Unknow problem:", args.problem)
+
     if args.kernel == "bench":
         del(args.kernel)
         problems = [Problem(kernel=kernel, **vars(args)) for kernel in
-                    PROBLEMS[args.problem]]
+                    Problem.kernels]
         for p in problems:
             p.solve()
         if args.plot:
             plot(*problems)
 
     else:
-        if args.kernel not in PROBLEMS[args.problem]:
+        if args.kernel not in Problem.kernels:
             msg = "{} kernel not implemented for {} problem.".format(
                     args.kernel, args.problem)
             exit(msg)
