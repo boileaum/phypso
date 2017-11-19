@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
         if args.plot:
             plot(*problems)
-        print("Execution times [s]")
+        print("Execution times [s] for {} problem.".format(args.problem))
         print(scores)
 
         normalized_scores = scores.copy()

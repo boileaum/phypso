@@ -12,11 +12,12 @@ A set of very simple hyperbolic solvers using techniques to use efficient comput
     - [Download the source repository](#download-the-source-repository)
     - [Using docker](#using-docker)
     - [Using pip](#using-pip)
-- [Saint-Venant's equation solver](#saint-venants-equation-solver)
+- [General Godunov solver](#general-godunov-solver)
     - [Usage](#usage)
+- [Saint-Venant's equation solver](#saint-venants-equation-solver)
+    - [Usage](#usage-1)
 - [Burgers' equation solver](#burgers-equation-solver)
     - [Basic usage](#basic-usage)
-        - [Get help with:](#get-help-with)
         - [Examples:](#examples)
     - [Use `pythran` to accelerate Python](#use-pythran-to-accelerate-python)
         - [Howto](#howto)
@@ -87,12 +88,46 @@ From the project root directory, compile the C-executable, C-library, Cython and
 make
 ```
 
+## General Godunov solver
+
+
+### Usage
+
+1. Go to `./godunov` subdirectory.
+- Run using the python main program:
+
+```
+./godunov.py -h
+usage: godunov.py [-h] [--problem {burgers,stvenant}] [--tmax final_time]
+                  [--nmax number_of_pts] [--profile] [--plot]
+                  [--kernel {python,numpy,pythran,bench}]
+
+Solve hyperbolic problem
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --problem {burgers,stvenant}
+                        select Problem type
+  --tmax final_time     simulation final time
+  --nmax number_of_pts  number of grid points
+  --profile             activate profiling
+  --plot                activate plotting
+  --kernel {python,numpy,pythran,bench}
+                        select kernel type
+```
+
+For example, run a benchmark to compare different kernel versions:
+
+```
+./godunov.py --kernel bench
+```
 
 ## Saint-Venant's equation solver
 
 ### Usage
 
-Run using the python main program:
+1. Go to `./stvenant` subdirectory.
+- Run using the python main program:
 
 ```
 ./stvenant.py [-h] [--noplot]
@@ -105,7 +140,8 @@ Run using the python main program:
 
 ### Basic usage
 
-#### Get help with:
+1. Go to `./burgers` subdirectory.
+- Run using the python main program:
 
 ```
 ./burgers.py -h
