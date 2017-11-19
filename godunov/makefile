@@ -12,9 +12,19 @@ all: pythran
 fortran:
 	$(F2PY) $(F2PYFLAGS) -m godunov_fortran -c godunov.f90
 
-pythran:
-	pythran riemann_burgers.py -o riemann_burgers_pythran.so
-	pythran riemann_stvenant.py -o riemann_stvenant_pythran.so
+pythran_burgers:
+	cd burgers && pythran riemann.py -o riemann_pythran.so
 
-clean:
+pythran_stvenant:
+	cd stvenant && pythran riemann.py -o riemann_pythran.so
+
+pythran: pythran_burgers pythran_stvenant
+
+clean_burgers:
+	cd burgers && rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__
+
+clean_stvenant:
+	cd stvenant && rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__
+
+clean: clean_burgers clean_stvenant
 	rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__

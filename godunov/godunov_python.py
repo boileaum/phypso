@@ -5,9 +5,9 @@ Godunov solver
 """
 
 import numpy as np
-from riemann_burgers import riemann as riemann_burgers
-from riemann_stvenant import riemann as riemann_stvenant
-from riemann_stvenant import g
+from burgers.riemann import riemann as riemann_burgers
+from stvenant.riemann import riemann as riemann_stvenant
+from stvenant.riemann import g
 
 
 class Hyperbolic():
