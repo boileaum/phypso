@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#pythran export g
+#pythran export riemann(float[:], float[:], float)
 #pythran export Z(float, float)
-#pythran export riemann(float[], float[], float)
-
 """
-Riemann solver
+A python version of St-Venant Riemann solver
 """
 
 from math import sqrt

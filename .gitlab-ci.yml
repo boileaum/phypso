@@ -23,3 +23,10 @@ t:docker:stvenant:
   script:
     - docker run boileaum/phypso /bin/bash -c 'cd stvenant && pytest -v'
 
+t:docker:godunov:
+  stage: test
+  tags:
+    - shell, docker
+  script:
+    - docker run boileaum/phypso /bin/bash -c 'cd godunov && pytest -v'
+

@@ -5,7 +5,7 @@ Solve Burgers' equation using the 1rst-order Godunov method
 """
 
 import argparse
-import godunov as godunov_python
+import godunov_burgers as godunov_burgers_python
 import numpy as np
 import timeit
 
@@ -15,22 +15,22 @@ KERNELS = set(('python', 'pythran', 'numpy', 'numba', 'fortran'))
 def compute_sol(tmax, nmax, kernel='python'):
     """Solve Godunov problem using the selected kernel"""
     if kernel == 'python':  # Use native (and naive!) python
-        return godunov_python.timeloop(tmax, nmax)
+        return godunov_burgers_python.timeloop(tmax, nmax)
     elif kernel == 'pythran':  # Use C++ with pythran
-        import godunov_pythran
-        return godunov_pythran.timeloop(tmax, nmax)
+        import godunov_burgers_pythran
+        return godunov_burgers_pythran.timeloop(tmax, nmax)
     elif kernel == 'numpy':
-        import godunov_numpy
-        return godunov_numpy.timeloop(tmax, nmax)
+        import godunov_burgers_numpy
+        return godunov_burgers_numpy.timeloop(tmax, nmax)
     elif kernel == 'numba':
-        import godunov_numba
-        return godunov_numba.timeloop(tmax, nmax)
+        import godunov_burgers_numba
+        return godunov_burgers_numba.timeloop(tmax, nmax)
     elif kernel == 'fortran':
-        import godunov_fortran
+        import godunov_burgers_fortran
         # Allocate Fortran-ordered numpy arrays
         xm = np.zeros(nmax+2, order='F')
         wn = np.zeros(nmax+2, order='F')
-        godunov_fortran.timeloop(tmax, xm, wn)
+        godunov_burgers_fortran.timeloop(tmax, xm, wn)
         return xm, wn
 
 
@@ -56,7 +56,7 @@ def burgers(tmax, nmax, profile=False, plot=False, kernel='python'):
         print("Mean time [s] over {} executions = {:f}".format(ntime,
               total_time/ntime))
 
-    wex = np.vectorize(godunov_python.sol_exact)(xm, tmax)
+    wex = np.vectorize(godunov_burgers_python.sol_exact)(xm, tmax)
 
     error = L2_err(wn, wex)
     print("L2 error = {:f}".format(error))

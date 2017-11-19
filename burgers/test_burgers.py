@@ -5,9 +5,8 @@ Check that numerical error of the Godunov solver with various kernel versions
 """
 
 from burgers import burgers, KERNELS
-from pytest import mark, approx, param
+from pytest import mark, approx
 import itertools
-import sys
 
 
 nmax_kernel_combinations = itertools.product([100, 1000], KERNELS)

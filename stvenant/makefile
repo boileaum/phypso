@@ -19,6 +19,6 @@ pythran:
 	pythran riemann.py -o riemann_pythran.so
 
 clean:
-	rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__
+	rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__ cstvenant.c plotriem *.exe
 
 	

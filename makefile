@@ -1,4 +1,4 @@
-SUBDIRS = burgers stvenant
+SUBDIRS = burgers stvenant godunov
 
 .PHONY: all clean
 
