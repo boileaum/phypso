@@ -8,6 +8,7 @@ import argparse
 from importlib import import_module
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas
 from timeit import default_timer
 
 all_KERNELS = 'python', 'numpy', 'pythran'
@@ -72,7 +73,8 @@ class Burgers():
 
     def plot_num(self, ax):
         x = self.xm[1:-1]
-        ax.plot(x, self.wn[1:-1], label=p.kernel)
+        ax.plot(x, self.wn[1:-1], label='{}, {}'.format(self.nmax,
+                self.kernel))
 
 
 class StVenant(Burgers):
@@ -97,14 +99,16 @@ class StVenant(Burgers):
         x = self.xm[1:-1]
         h = self.wn[1:-1, 0]
         u = self.wn[1:-1, 1]/h
-        ax.plot(x, h, label='h_'+p.kernel)
-        ax.plot(x, u, label='u_'+p.kernel)
+        ax.plot(x, h, label='h ({}, {})'.format(self.nmax, self.kernel))
+        ax.plot(x, u, label='u ({}, {})'.format(self.nmax, self.kernel))
 
 
 def plot(*problems):
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
+
+    # Plot exact solution only for first problem
     p0 = problems[0]
     p0.plot_exact(ax)
 
@@ -134,20 +138,33 @@ if __name__ == '__main__':
 
     if args.problem == 'burgers':
         Problem = Burgers
-
     elif args.problem == 'stvenant':
         Problem = StVenant
-    else:
-        exit("Unknow problem:", args.problem)
 
     if args.kernel == "bench":
         del(args.kernel)
-        problems = [Problem(kernel=kernel, **vars(args)) for kernel in
-                    Problem.kernels]
-        for p in problems:
-            p.solve()
+        del(args.nmax)
+        sizes = 100, 500, 1000
+        scores = pandas.DataFrame(data=0, columns=Problem.kernels,
+                                  index=sizes)
+        problems = []
+        for nmax in sizes:
+            for kernel in Problem.kernels:
+                p = Problem(kernel=kernel, nmax=nmax, **vars(args))
+                problems.append(p)
+                p.solve()
+                scores.loc[nmax, kernel] = p.exec_time
+
         if args.plot:
             plot(*problems)
+        print("Execution times [s]")
+        print(scores)
+
+        normalized_scores = scores.copy()
+        for column in normalized_scores.columns:
+            normalized_scores[column] /= scores['python']
+        print("\nNormalized execution times [-]")
+        print(normalized_scores)
 
     else:
         if args.kernel not in Problem.kernels:
