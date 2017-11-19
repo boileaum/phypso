@@ -27,7 +27,7 @@ class Burgers():
     kernels = all_KERNELS
 
     def set_solver(self):
-        self.solver = self.godunov_module.Burgers(self.nmax, self.tmax)
+        self.solver = self.godunov_module.Burgers(self)
 
     def __init__(self, **kwargs):
 
@@ -86,7 +86,7 @@ class StVenant(Burgers):
     kernels = 'python', 'pythran'
 
     def set_solver(self):
-        self.solver = self.godunov_module.StVenant(self.nmax, self.tmax)
+        self.solver = self.godunov_module.StVenant(self)
 
     def plot_exact(self, ax):
         x = self.xm[1:-1]

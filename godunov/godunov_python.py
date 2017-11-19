@@ -13,10 +13,12 @@ from stvenant.riemann import g
 class Hyperbolic():
     """A generic class to define a hyperbolic solver"""
 
-    def __init__(self, nmax, tmax):
+    def __init__(self, problem):
 
-        self.nmax = nmax
-        self.tmax = tmax
+        self.problem = problem
+        self.nmax = self.problem.nmax
+        self.tmax = self.problem.tmax
+        self.plot = self.problem.plot
 
         # Initialize with analytical solution
         self.dx = float(self.xmax - self.xmin)/self.nmax
@@ -62,6 +64,8 @@ class Hyperbolic():
             self.wn[1:-1] -= dt/self.dx*(self.flux[1:] - self.flux[:-1])
 
             t += dt
+#            if self.plot:
+#                self.plot_num()
             # print("mass = ", np.sum(self.wn[1:-1, 0]*self.dx))
 
         return self.wn
@@ -73,10 +77,10 @@ class Burgers(Hyperbolic):
     xmin = -1.
     xmax = 2.
 
-    def __init__(self, nmax, tmax):
+    def __init__(self, problem):
 
         self.riemann = riemann_burgers
-        super().__init__(nmax, tmax)
+        super().__init__(problem)
         self.flux = np.zeros(self.nmax+1)
 
     def sol_exact(self, x, t):
@@ -107,10 +111,10 @@ class StVenant(Hyperbolic):
     wL = np.array([hL, hL*uL])
     wR = np.array([hR, hR*uR])
 
-    def __init__(self, nmax, tmax):
+    def __init__(self, problem):
 
         self.riemann = riemann_stvenant
-        super().__init__(nmax, tmax)
+        super().__init__(problem)
         self.flux = np.zeros((self.nmax+1, 2))
 
     def sol_exact(self, x, t):
