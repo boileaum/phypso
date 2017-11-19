@@ -37,3 +37,19 @@ def test_stvenant(nmax, kernel):
     problem = StVenant(tmax=tmax, nmax=nmax, kernel=kernel)
     problem.solve()
     assert problem.error == approx(err_ref[nmax])
+    # Check mass conservation
+    assert problem.solver.mass == approx(problem.solver.init_mass)
+
+
+tmax_kernel_combinations = itertools.product([1.0, 4.0], StVenant.kernels)
+
+
+@mark.parametrize('tmax, kernel', tmax_kernel_combinations)
+def test_mass_conservation(tmax, kernel):
+    """Test a combination of tmax values and kernel versions and check mass
+    conservation"""
+    nmax = 100
+    problem = StVenant(tmax=tmax, nmax=nmax, kernel=kernel)
+    problem.solve()
+    # Check mass conservation
+    assert problem.solver.mass == approx(problem.solver.init_mass)

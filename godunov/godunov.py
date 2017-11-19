@@ -26,6 +26,9 @@ class Burgers():
     problem = "burgers"
     kernels = all_KERNELS
 
+    def set_solver(self):
+        self.solver = self.godunov_module.Burgers(self)
+
     def __init__(self, **kwargs):
 
         self.tmax = kwargs.get('tmax', 1.0)
@@ -34,10 +37,12 @@ class Burgers():
         self.profile = kwargs.get('profile', False)
         self.kernel = kwargs.get('kernel', 'python')
 
+        # Import module according to kernel type
         module_name = "godunov_" + self.kernel
         self.godunov_module = import_module(module_name)
-        self.solver = self.godunov_module.Burgers(self.nmax, self.tmax)
+        self.set_solver()
         self.xm = self.solver.xm
+
 
     def __repr__(self):
 
@@ -67,14 +72,26 @@ class Burgers():
         self.compute_sol_exact()
         self.compute_error()
 
+    def BC(self, *args):
+        pass
+
     def plot_exact(self, ax):
         x = self.xm[1:-1]
         ax.plot(x, self.wexact[1:-1], 'r+', label='exact')
 
     def plot_num(self, ax):
+        self.plot_wn(ax, self.wn)
+
+    def plot_wn(self, ax, wn):
         x = self.xm[1:-1]
-        ax.plot(x, self.wn[1:-1], label='{}, {}'.format(self.nmax,
-                self.kernel))
+        self.line, = ax.plot(x, wn[1:-1], label='{}, {}'.format(self.nmax,
+                             self.kernel))
+
+    def plot_update(self, ax, wn):
+        self.line.set_ydata(wn[1:-1])
+
+    def get_mass(self, wn, dx):
+        return np.sum(wn[1:-1]*dx)
 
 
 class StVenant(Burgers):
@@ -82,25 +99,44 @@ class StVenant(Burgers):
     problem = "stvenant"
     kernels = 'python', 'pythran'
 
-    def __init__(self, **kwargs):
+    def set_solver(self):
+        self.solver = self.godunov_module.StVenant(self)
 
-        super().__init__(**kwargs)
-        self.solver = self.godunov_module.StVenant(self.nmax, self.tmax)
-        self.xm = self.solver.xm
+    def BC(self, wn):
+        # Apply to left boundary
+        wn[0, 0] = wn[1, 0]  # h
+        wn[0, 1] = -wn[1, 1]  # u
+        # Apply to right boundary
+        wn[-1, 0] = wn[-2, 0]  # h
+        wn[-1, 1] = -wn[-2, 1]  # u
 
     def plot_exact(self, ax):
         x = self.xm[1:-1]
-        h = self.wn[1:-1, 0]
-        u = self.wn[1:-1, 1]/h
+        h = self.wexact[1:-1, 0]
+        u = self.wexact[1:-1, 1]/h
         ax.plot(x, h, '+', label='h_exact')
         ax.plot(x, u, '+', label='u_exact')
 
-    def plot_num(self, ax):
+    def get_x_u_h(self, wn):
         x = self.xm[1:-1]
-        h = self.wn[1:-1, 0]
-        u = self.wn[1:-1, 1]/h
-        ax.plot(x, h, label='h ({}, {})'.format(self.nmax, self.kernel))
-        ax.plot(x, u, label='u ({}, {})'.format(self.nmax, self.kernel))
+        h = wn[1:-1, 0]
+        u = wn[1:-1, 1]/h
+        return x, u, h
+
+    def plot_wn(self, ax, wn):
+        x, u, h = self.get_x_u_h(wn)
+        self.line_h, = ax.plot(x, h, label='h ({}, {})'.format(self.nmax,
+                               self.kernel))
+        self.line_u, = ax.plot(x, u, label='u ({}, {})'.format(self.nmax,
+                               self.kernel))
+
+    def plot_update(self, ax, wn):
+        x, u, h = self.get_x_u_h(wn)
+        self.line_h.set_ydata(u)
+        self.line_u.set_ydata(h)
+
+    def get_mass(self, wn, dx):
+        return np.sum(wn[1:-1, 0]*dx)
 
 
 def plot(*problems):

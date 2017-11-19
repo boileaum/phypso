@@ -10,9 +10,9 @@ from godunov_python import Burgers as Burgers_python
 class Burgers(Burgers_python):
     """A set of methods to solve Burgers' problem using a numpy kernel"""
 
-    def __init__(self, nmax, tmax):
+    def __init__(self, problem):
 
-        super().__init__(nmax, tmax)
+        super().__init__(problem)
         del(self.riemann)  # Unbound self.riemann to old definition
 
     def riemann(self, wL, wR, xi):
