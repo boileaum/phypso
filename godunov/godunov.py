@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from timeit import default_timer
 
-all_KERNELS = set(('python', 'numpy', 'pythran'))
+all_KERNELS = 'python', 'numpy', 'pythran'
 PROBLEMS = {'burgers': all_KERNELS,
             'stvenant': set(('python', 'pythran'))}
 
@@ -72,6 +72,41 @@ class Problem():
         self.compute_sol_exact()
         self.compute_error()
 
+    def plot_exact(self, ax):
+        x = self.xm[1:-1]
+        if self.problem == "burgers":
+            ax.plot(x, self.wexact[1:-1], 'r+', label='exact')
+        else:
+            h = self.wn[1:-1, 0]
+            u = self.wn[1:-1, 1]/h
+            ax.plot(x, h, '+', label='h_exact')
+            ax.plot(x, u, '+', label='u_exact')
+
+    def plot_num(self, ax):
+        x = self.xm[1:-1]
+        if self.problem == "burgers":
+            ax.plot(x, self.wn[1:-1], '-', label=self.kernel)
+        else:
+            h = self.wn[1:-1, 0]
+            u = self.wn[1:-1, 1]/h
+            ax.plot(x, h, label='h_'+p.kernel)
+            ax.plot(x, u, label='u_'+p.kernel)
+
+
+def plot(*problems):
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    p0 = problems[0]
+    p0.plot_exact(ax)
+
+    for p in problems:
+        p.plot_num(ax)
+
+    ax.set_xlabel(r'$x$')
+    fig.legend()
+    plt.show()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Solve hyperbolic problem")
@@ -85,21 +120,28 @@ if __name__ == '__main__':
                         help="activate profiling")
     parser.add_argument('--plot', action='store_true',
                         help="activate plotting")
-    parser.add_argument('--kernel', choices=all_KERNELS,
+    parser.add_argument('--kernel', choices=all_KERNELS + ("bench",),
                         default='python', help="select kernel type")
     args = parser.parse_args()
 
-    if args.kernel not in PROBLEMS[args.problem]:
-        msg = "{} kernel not implemented for {} problem.".format(args.kernel,
-                                                                 args.problem)
-        exit(msg)
+    if args.kernel == "bench":
+        del(args.kernel)
+        problems = [Problem(kernel=kernel, **vars(args)) for kernel in
+                    PROBLEMS[args.problem]]
+        for p in problems:
+            p.solve()
+        if args.plot:
+            plot(*problems)
 
-    p = Problem(**vars(args))
-    print(p)
-    p.solve()
+    else:
+        if args.kernel not in PROBLEMS[args.problem]:
+            msg = "{} kernel not implemented for {} problem.".format(
+                    args.kernel, args.problem)
+            exit(msg)
 
-    if args.plot:
-        plt.plot(p.xm[1:-1], p.wexact[1:-1], 'r+', label='exact')
-        plt.plot(p.xm[1:-1], p.wn[1:-1], 'k-', label=p.kernel)
-        plt.legend()
-        plt.show()
+        p = Problem(**vars(args))
+        print(p)
+        p.solve()
+
+        if args.plot:
+            plot(p)
