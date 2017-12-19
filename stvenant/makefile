@@ -1,24 +1,29 @@
 COPTS= -fPIC -std=c99
-#COPTS= -Wno-unused-result -Wsign-compare -Wunreachable-code -DNDEBUG -fwrapv -O2 -Wall -Wstrict-prototypes -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fstack-protector-strong -O2 -pipe
 
-.PHONY: clean
+.PHONY: clean all C libC pythran Cython
 
 all: C libC Cython pythran
+C: stvenant.exe
+libC: libstvenant_c.so
+pythran: riemann_pythran.so
+Cython: cstvenant*.so
 
-C:
+stvenant.o: stvenant.c
+	gcc $(COPTS) -c stvenant.c 
+
+stvenant.exe: stvenant.o
 	gcc $(COPTS) stvenant.c -lm -o stvenant.exe
 
-libC:
-	gcc $(COPTS) -c stvenant.c 
+libstvenant_c.so: stvenant.o
 	gcc $(COPTS) -shared -o libstvenant_c.so stvenant.o
 
-Cython:
+cstvenant*.so: cstvenant.pyx cstvenant.pxd
 	python3 setup.py build_ext --inplace
 
-pythran:
+riemann_pythran.so: riemann.py
 	pythran riemann.py -o riemann_pythran.so
 
 clean:
-	rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__ cstvenant.c plotriem *.exe
+	rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build *.so.dSYM __pycache__ cstvenant.c plotriem *.exe
 
 	

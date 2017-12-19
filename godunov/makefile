@@ -1,24 +1,14 @@
-F2PY=f2py
-FC=gfortran
-FCFLAGS="-fcheck=bounds"
-OPTFLAG=-O3
-F2PYFLAGS=-DF2PY_REPORT_ON_ARRAY_COPY=1 --quiet --f90exec=$(FC) --opt=$(OPTFLAG) --f90flags=$(FCFLAGS)
-#F2PYFLAGS=--quiet -lgomp --f90exec=$(FC) --opt=$(OPTFLAG) --f90flags=$(FCFLAGS)
-
-.PHONY: clean
+.PHONY: clean all pythran clean_burgers clean_stvenant
 
 all: pythran
 
-fortran:
-	$(F2PY) $(F2PYFLAGS) -m godunov_fortran -c godunov.f90
+pythran: burgers/riemann_pythran.so stvenant/riemann_pythran.so
 
-pythran_burgers:
+burgers/riemann_pythran.so: burgers/riemann.py
 	cd burgers && pythran riemann.py -o riemann_pythran.so
 
-pythran_stvenant:
+stvenant/riemann_pythran.so: stvenant/riemann.py
 	cd stvenant && pythran riemann.py -o riemann_pythran.so
-
-pythran: pythran_burgers pythran_stvenant
 
 clean_burgers:
 	cd burgers && rm -rf *.o *.mod *.so *.tmp *.pyf *.pyc build/* *.so.dSYM __pycache__
