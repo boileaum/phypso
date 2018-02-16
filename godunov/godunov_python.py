@@ -19,9 +19,6 @@ class Hyperbolic():
         self.nmax = self.problem.nmax
         self.tmax = self.problem.tmax
         self.plot = self.problem.plot
-        if self.plot:
-            import matplotlib.pyplot as plt
-            plt.ion()
 
         # Initialize with analytical solution
         self.dx = float(self.xmax - self.xmin)/self.nmax
@@ -61,8 +58,11 @@ class Hyperbolic():
         """Iterate overt time to return the solution at t = tmax"""
 
         if self.plot:
+            import matplotlib.pyplot as plt
+            plt.ion()
             self.fig = plt.figure()
             self.ax = self.fig.add_subplot(111)
+            self.ax.set_title(self.problem.message)
             self.problem.plot_wn(self.ax, self.wn)
 
         t = 0.

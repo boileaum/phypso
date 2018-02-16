@@ -43,6 +43,8 @@ class Burgers():
         self.set_solver()
         self.xm = self.solver.xm
 
+        self.message = f"Solving {self.problem} with {self.kernel} " + \
+                       f"(n = {self.nmax})..."
 
     def __repr__(self):
 
@@ -53,19 +55,18 @@ class Burgers():
 
     def compute_sol_num(self):
 
+        print(self.message)
         start_time = default_timer()  # Start timer
         self.wn = self.solver.timeloop()
         self.exec_time = default_timer() - start_time
-        print("Time to solve {} with {} [s]: {:f}".format(self.problem,
-                                                          self.kernel,
-                                                          self.exec_time))
+        print(f"Elapsed time [s] = {self.exec_time:f}")
 
     def compute_sol_exact(self):
         self.wexact = self.solver.compute_sol_exact(self.tmax)
 
     def compute_error(self):
         self.error = L2_err(self.wn, self.wexact)
-        print("L2 error = {:f}".format(self.error))
+        print(f"L2 error         = {self.error:f}")
 
     def solve(self):
         self.compute_sol_num()
@@ -84,8 +85,7 @@ class Burgers():
 
     def plot_wn(self, ax, wn):
         x = self.xm[1:-1]
-        self.line, = ax.plot(x, wn[1:-1], label='{}, {}'.format(self.nmax,
-                             self.kernel))
+        self.line, = ax.plot(x, wn[1:-1], label=f'{self.nmax}, {self.kernel}')
 
     def plot_update(self, ax, wn):
         self.line.set_ydata(wn[1:-1])
